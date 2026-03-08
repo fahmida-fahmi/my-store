@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stockflow — Inventory Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:     #0f1117;
+  --bg:      #f6f7f9;
+  --surface: #ffffff;
+  --paper:   #f0f2f5;
+  --sand:    #e4e7ed;
+  --blue:    #2563eb;
+  --blue-l:  #eff4ff;
+  --green:   #059669;
+  --green-l: #ecfdf5;
+  --amber:   #d97706;
+  --amber-l: #fffbeb;
+  --red:     #dc2626;
+  --red-l:   #fef2f2;
+  --purple:  #7c3aed;
+  --purple-l:#f5f3ff;
+  --muted:   #6b7280;
+  --border:  #e5e7eb;
+  --sh:  0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.07);
+  --shl: 0 8px 40px rgba(0,0,0,.13);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* ── HEADER ── */
+header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.hi{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:16px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:white;flex-shrink:0}
+.bmark{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.bname{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.3px}
+.bsub{font-size:9px;opacity:.4;letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
+.hs{flex:1;max-width:480px;margin:0 auto;position:relative}
+.hs input{width:100%;padding:9px 14px 9px 38px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.11);border-radius:8px;color:white;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s}
+.hs input::placeholder{color:rgba(255,255,255,.3)}
+.hs input:focus{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}
+.hs svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4}
+.hbtns{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.hbtn{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid rgba(255,255,255,.16);border-radius:7px;background:transparent;color:rgba(255,255,255,.72);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;white-space:nowrap}
+.hbtn:hover{background:rgba(255,255,255,.1);color:white}
+.hbtn.primary{background:var(--blue);border-color:var(--blue);color:white}
+.hbtn.primary:hover{opacity:.88}
+.hbtn.success{background:var(--green);border-color:var(--green);color:white}
+.hbtn.success:hover{opacity:.88}
+.hbtn.ghost{border-color:rgba(255,255,255,.22)}
+/* staff bar */
+.staff-bar{background:linear-gradient(90deg,#1d4ed8,#7c3aed);padding:7px 24px;display:none;align-items:center;justify-content:center;gap:10px;font-size:12px;color:white;font-weight:500}
+.staff-bar.show{display:flex}
+.staff-bar .sb-badge{background:rgba(255,255,255,.2);padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.spin{display:inline-block}.spinning .spin{animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.ldot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 6px #34d399;animation:pd 2s ease infinite}
+@keyframes pd{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── SETUP DRAWER ── */
+.drawer{background:#1a1d27;border-bottom:1px solid rgba(255,255,255,.07);overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.drawer.open{max-height:360px}
+.dri{max-width:900px;margin:0 auto;padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.dri h3{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.urow{display:flex;gap:8px}
+.ui{flex:1;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;color:white;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:.2s}
+.ui:focus{border-color:var(--blue)}
+.ui::placeholder{color:rgba(255,255,255,.22)}
+.cbtn{padding:10px 18px;background:var(--blue);border:none;border-radius:7px;color:white;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.cbtn:hover{opacity:.85}
+.schema{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px 14px}
+.sr{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.sr:last-child{border:none}
+.sc{font-family:'Courier New',monospace;color:#60a5fa;font-size:11px;min-width:86px}
+.sd{color:rgba(255,255,255,.36)}
+.srq{margin-left:auto;font-size:10px;color:rgba(255,255,255,.2)}
+.dcta{margin-top:12px;font-size:12px;color:rgba(255,255,255,.28);cursor:pointer;transition:.2s}
+.dcta:hover{color:rgba(255,255,255,.6)}
+.dcta span{text-decoration:underline}
+
+/* ── MAIN ── */
+.main{max-width:1320px;margin:0 auto;padding:24px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.sc2{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
+.sc2::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.sc2.sa::after{background:var(--ink)}.sc2.sg::after{background:var(--green)}.sc2.sw::after{background:var(--amber)}.sc2.sr2::after{background:var(--red)}
+.si{font-size:22px;flex-shrink:0}
+.sn{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1}
+.sc2.sg .sn{color:var(--green)}.sc2.sw .sn{color:var(--amber)}.sc2.sr2 .sn{color:var(--red)}
+.sl{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* categories */
+.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.tag{padding:6px 15px;border:1.5px solid var(--border);background:var(--surface);border-radius:20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:.18s}
+.tag:hover{border-color:var(--ink);color:var(--ink)}
+.tag.active{background:var(--ink);color:white;border-color:var(--ink)}
+
+/* toolbar */
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.stags{display:flex;gap:6px}
+.stag{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:.18s}
+.stag:hover{border-color:var(--ink);color:var(--ink)}
+.stag.active{background:var(--ink);color:white;border-color:var(--ink)}
+.stag.ok.active{background:var(--green);border-color:var(--green)}
+.stag.mid.active{background:var(--amber);border-color:var(--amber)}
+.stag.low.active{background:var(--red);border-color:var(--red)}
+.ssel{margin-left:auto;padding:7px 12px;border:1.5px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;outline:none;font-weight:500}
+.ri{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rb{background:var(--ink);color:white;padding:2px 12px;border-radius:10px;font-size:12px;font-weight:600}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s,border-color .22s;animation:fup .25s ease both;box-shadow:var(--sh)}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shl);border-color:rgba(37,99,235,.4)}
+@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.cimg{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--paper);position:relative}
+.cimg img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.card:hover .cimg img{transform:scale(1.05)}
+.noimg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--sand)}
+.ibadge{position:absolute;top:8px;right:8px;padding:3px 10px;border-radius:17px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.ibadge.ok{background:rgba(5,150,105,.9);color:white}
+.ibadge.mid{background:rgba(217,119,6,.9);color:white}
+.ibadge.low{background:rgba(220,38,38,.9);color:white}
+.cadmin{position:absolute;inset:0;background:rgba(15,17,23,.5);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;gap:8px}
+.cadmin.show{display:flex}
+.cact{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;transition:.15s;display:flex;align-items:center;gap:5px}
+.cact.edit{background:white;color:var(--ink)}.cact.edit:hover{background:var(--blue-l);color:var(--blue)}
+.cact.del{background:var(--red);color:white}.cact.del:hover{opacity:.88}
+.cbody{padding:14px}
+.ccat{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.cname{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;line-height:1.35;margin-bottom:3px}
+.csku{font-size:10px;color:var(--muted);font-family:'Courier New',monospace;margin-bottom:8px}
+.vpills{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
+.vp{padding:2px 7px;border-radius:4px;border:1px solid var(--sand);background:var(--paper);font-size:10px;color:var(--muted);font-weight:500}
+.cfoot{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--paper)}
+.cprice{font-family:'Syne',sans-serif;font-size:17px;font-weight:800}
+.cstk{font-size:12px;color:var(--muted)}
+.cstk strong{color:var(--ink);font-weight:600}
+.sbar{height:3px;background:var(--paper);border-radius:2px;margin-top:9px;overflow:hidden}
+.sbf{height:100%;border-radius:2px;transition:width .5s}
+
+/* ── STATES ── */
+.state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted)}
+.state .ico{font-size:50px;margin-bottom:14px;opacity:.35;display:block}
+.state p{font-size:16px;font-weight:500}
+.state small{font-size:13px;display:block;margin-top:6px;opacity:.7}
+.ldr{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.ldr span{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:ld 1.2s ease infinite}
+.ldr span:nth-child(2){animation-delay:.2s}.ldr span:nth-child(3){animation-delay:.4s}
+@keyframes ld{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+
+/* ── LOGIN MODAL ── */
+.lov{position:fixed;inset:0;background:rgba(15,17,23,.7);backdrop-filter:blur(10px);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.lov.on{opacity:1;pointer-events:all}
+.lbox{background:white;border-radius:20px;width:100%;max-width:380px;padding:38px 34px;box-shadow:var(--shl);transform:scale(.95) translateY(10px);transition:transform .28s cubic-bezier(.34,1.4,.64,1);text-align:center}
+.lov.on .lbox{transform:scale(1) translateY(0)}
+.lbox-icon{width:56px;height:56px;background:var(--blue-l);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px}
+.lbox h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}
+.lbox p{font-size:13px;color:var(--muted);margin-bottom:26px;line-height:1.5}
+.lfield{position:relative;margin-bottom:12px;text-align:left}
+.lfield label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.lfield input{width:100%;padding:12px 42px 12px 14px;border:1.5px solid var(--border);border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s;letter-spacing:1px}
+.lfield input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.leye{position:absolute;right:12px;bottom:12px;cursor:pointer;opacity:.4;font-size:16px;background:none;border:none;padding:0;transition:.2s}
+.leye:hover{opacity:.8}
+.lerr{font-size:12px;color:var(--red);margin-bottom:12px;min-height:16px;text-align:left;font-weight:500}
+.lbtn{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
+.lbtn:hover{opacity:.88}
+.lbtn:active{transform:scale(.98)}
+.lcancel{margin-top:12px;font-size:13px;color:var(--muted);cursor:pointer;font-weight:500}
+.lcancel:hover{color:var(--ink)}
+.lpwdlink{margin-top:16px;font-size:12px;color:var(--muted)}
+.lpwdlink span{text-decoration:underline;cursor:pointer;color:var(--blue)}
+.lpwdlink span:hover{opacity:.8}
+
+/* ── DETAIL MODAL ── */
+.ov{position:fixed;inset:0;background:rgba(15,17,23,.55);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.ov.on{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shl);transform:scale(.96) translateY(8px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
+.ov.on .modal{transform:scale(1) translateY(0)}
+.mimg{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--paper);position:relative;border-radius:18px 18px 0 0}
+.mimg img{width:100%;height:100%;object-fit:cover}
+.mimg .noimg-lg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;color:var(--sand)}
+.mclose{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(15,17,23,.5);backdrop-filter:blur(4px);border:none;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.mclose:hover{background:var(--red)}
+.mbody{padding:22px 24px 26px}
+.mcat{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.mname{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1.25;margin-bottom:3px}
+.msku{font-size:12px;color:var(--muted);font-family:'Courier New',monospace;margin-bottom:18px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.mbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 13px}
+.mbox .mk{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.mbox .mv{font-family:'Syne',sans-serif;font-size:19px;font-weight:800}
+.mv.ok{color:var(--green)}.mv.mid{color:var(--amber)}.mv.low{color:var(--red)}
+.msect{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;color:var(--muted);margin-bottom:8px}
+.mvars{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.mvar{padding:6px 14px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-weight:600}
+.avwrap{background:var(--bg);border-radius:11px;padding:14px}
+.avtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.avlbl{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.avv{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+.avbar{height:6px;background:var(--sand);border-radius:3px;overflow:hidden}
+.avf{height:100%;border-radius:3px;transition:width .6s}
+.avnote{font-size:11px;color:var(--muted);margin-top:5px}
+/* staff controls in modal */
+.madmin{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:none}
+.madmin.show{display:block}
+.madmin-hd{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blue);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.stock-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--bg);padding:11px 13px;border-radius:9px}
+.stock-row label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
+.stock-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;outline:none;text-align:center;transition:.2s;max-width:100px}
+.stock-row input:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(5,150,105,.1)}
+.supd{padding:8px 16px;background:var(--green);color:white;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.supd:hover{opacity:.85}
+.macts{display:flex;gap:8px}
+.mabtn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:5px}
+.mabtn:hover{border-color:var(--ink);background:var(--bg)}
+.mabtn.danger{color:var(--red);border-color:rgba(220,38,38,.3)}
+.mabtn.danger:hover{background:var(--red-l);border-color:var(--red)}
+.mabtn.primary{background:var(--blue);color:white;border-color:var(--blue)}
+.mabtn.primary:hover{opacity:.88}
+
+/* ── FORM MODAL ── */
+.fov{position:fixed;inset:0;background:rgba(15,17,23,.65);backdrop-filter:blur(7px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.fov.on{opacity:1;pointer-events:all}
+.fmod{background:var(--surface);border-radius:18px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:var(--shl);transform:translateY(14px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
+.fov.on .fmod{transform:translateY(0)}
+.fhead{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.fhead h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.fclose{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.2s}
+.fclose:hover{background:var(--red);color:white;border-color:var(--red)}
+.fbody{padding:20px 24px 24px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg.full{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+.field input,.field select{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:.2s;background:var(--surface);width:100%}
+.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);background:var(--blue-l)}
+.field .hint{font-size:11px;color:var(--muted)}
+.req{color:var(--red)}
+.fsub{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.fsub:hover{opacity:.88}
+.fsub:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── CONFIRM ── */
+.conf{position:fixed;inset:0;background:rgba(15,17,23,.65);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.conf.on{opacity:1;pointer-events:all}
+.cbox{background:var(--surface);border-radius:16px;padding:28px 26px;max-width:340px;width:100%;text-align:center;box-shadow:var(--shl);transform:scale(.94);transition:transform .2s}
+.conf.on .cbox{transform:scale(1)}
+.cbox-icon{font-size:36px;margin-bottom:12px}
+.cbox h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:7px}
+.cbox p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.cbrow{display:flex;gap:8px}
+.cbrow button{flex:1;padding:11px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;border:1.5px solid var(--border)}
+.cno{background:var(--surface);color:var(--ink)}.cno:hover{background:var(--bg)}
+.cyes{background:var(--red);color:white;border-color:var(--red)}.cyes:hover{opacity:.85}
+
+/* ── CHANGE PASSWORD ── */
+.pov{position:fixed;inset:0;background:rgba(15,17,23,.7);backdrop-filter:blur(10px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.pov.on{opacity:1;pointer-events:all}
+.pbox{background:var(--surface);border-radius:18px;width:100%;max-width:380px;padding:32px 28px;box-shadow:var(--shl);transform:scale(.95);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
+.pov.on .pbox{transform:scale(1)}
+.pbox h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px}
+.pbox p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.pbf{margin-bottom:14px}
+.pbf label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
+.pbf input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s}
+.pbf input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.pberr{font-size:12px;color:var(--red);min-height:16px;margin-bottom:10px;font-weight:500}
+.pbsub{width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.pbsub:hover{opacity:.88}
+.pbcancel{width:100%;margin-top:8px;padding:10px;background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.2s}
+.pbcancel:hover{border-color:var(--ink);color:var(--ink)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);padding:11px 22px;border-radius:24px;font-size:13px;z-index:9999;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.3,.64,1);white-space:nowrap;font-family:'Inter',sans-serif;color:white;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.18)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.toast.success{background:#059669}.toast.error{background:#dc2626}.toast.info{background:var(--ink)}
+
+.foot{text-align:center;padding:24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:36px}
+
+@media(max-width:960px){.stats{grid-template-columns:1fr 1fr}.mgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:10px}.hs{display:none}.dri{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr;gap:10px}.main{padding:14px}.fg{grid-template-columns:1fr}.hbtn span{display:none}}
+@media(max-width:400px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hi">
+    <a class="brand" href="#"><div class="bmark">📦</div><div><div class="bname">Stockflow</div><div class="bsub">Inventory</div></div></a>
+    <div class="hs"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="hSearch" placeholder="Search products, SKU, category…" oninput="doFilter()"/></div>
+    <div class="hbtns">
+      <div id="ldot" class="ldot" style="display:none" title="Connected"></div>
+      <button class="hbtn" id="syncBtn" onclick="syncData()"><span class="spin">↻</span> <span>Refresh</span></button>
+      <button class="hbtn success" id="addBtn" onclick="openForm()" style="display:none">＋ <span>Add Product</span></button>
+      <button class="hbtn primary" id="loginBtn" onclick="openLogin()">🔒 <span>Staff Login</span></button>
+      <button class="hbtn ghost" id="logoutBtn" onclick="doLogout()" style="display:none">🔓 <span>Logout</span></button>
+      <button class="hbtn" id="stBtn" onclick="toggleSetup()" title="Settings">⚙</button>
+    </div>
+  </div>
+</header>
+
+<!-- STAFF BAR -->
+<div class="staff-bar" id="staffBar">
+  <span class="sb-badge">STAFF MODE</span>
+  You're logged in as staff — you can add, edit, delete and update stock
+</div>
+
+<!-- SETUP DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="dri">
+    <div>
+      <h3>Connect Google Sheets</h3>
+      <div class="urow"><input class="ui" id="apiIn" type="text" placeholder="https://script.google.com/macros/s/…/exec"/><button class="cbtn" onclick="connectSheet()">Connect</button></div>
+      <div style="margin-top:14px">
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;font-weight:600">Staff Password</div>
+        <div class="urow"><input class="ui" id="pwdSetInput" type="password" placeholder="Set staff password…"/><button class="cbtn" onclick="savePassword()" style="background:#7c3aed">Save</button></div>
+      </div>
+      <div class="dcta" onclick="loadDemo()">or <span>load demo data</span> →</div>
+    </div>
+    <div>
+      <h3>Sheet Column Names</h3>
+      <div class="schema">
+        <div class="sr"><span class="sc">name</span><span class="sd">Product name</span><span class="srq">⚠ required</span></div>
+        <div class="sr"><span class="sc">stock</span><span class="sd">Stock quantity</span><span class="srq">⚠ required</span></div>
+        <div class="sr"><span class="sc">price</span><span class="sd">Price ($)</span><span class="srq">optional</span></div>
+        <div class="sr"><span class="sc">category</span><span class="sd">Category</span><span class="srq">optional</span></div>
+        <div class="sr"><span class="sc">variation</span><span class="sd">S,M,L or Red,Blue</span><span class="srq">optional</span></div>
+        <div class="sr"><span class="sc">code</span><span class="sd">SKU / Product code</span><span class="srq">optional</span></div>
+        <div class="sr"><span class="sc">unit</span><span class="sd">pcs / kg / pair</span><span class="srq">optional</span></div>
+        <div class="sr"><span class="sc">image</span><span class="sd">Image URL</span><span class="srq">optional</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="stats">
+    <div class="sc2 sa"><div class="si">📦</div><div><div class="sn" id="sTotal">0</div><div class="sl">Total Products</div></div></div>
+    <div class="sc2 sg"><div class="si">✅</div><div><div class="sn" id="sOk">0</div><div class="sl">In Stock</div></div></div>
+    <div class="sc2 sw"><div class="si">⚠️</div><div><div class="sn" id="sMid">0</div><div class="sl">Low Warning</div></div></div>
+    <div class="sc2 sr2"><div class="si">🚨</div><div><div class="sn" id="sLow">0</div><div class="sl">Critical Stock</div></div></div>
+  </div>
+  <div class="cats" id="catStrip"></div>
+  <div class="bar">
+    <div class="stags">
+      <div class="stag active" onclick="setSF('all',this)">All</div>
+      <div class="stag ok"  onclick="setSF('ok',this)">✓ In Stock</div>
+      <div class="stag mid" onclick="setSF('mid',this)">⚠ Low</div>
+      <div class="stag low" onclick="setSF('low',this)">🚨 Critical</div>
+    </div>
+    <select class="ssel" onchange="sortBy=this.value;doFilter()">
+      <option value="name">Sort: Name A–Z</option>
+      <option value="pl">Price: Low → High</option>
+      <option value="ph">Price: High → Low</option>
+      <option value="sl">Stock: Low → High</option>
+      <option value="sh">Stock: High → Low</option>
+    </select>
+  </div>
+  <div class="ri" id="ri" style="display:none"></div>
+  <div class="grid" id="grid">
+    <div class="state"><p>Connect your Google Sheet or load demo</p><small>Click ⚙ Settings to get started</small></div>
+  </div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="lov" id="lov" onclick="maybeCloseLov(event)">
+  <div class="lbox">
+    <div class="lbox-icon">🔐</div>
+    <h2>Staff Login</h2>
+    <p>Enter the staff password to manage inventory</p>
+    <div class="lfield">
+      <label>Password</label>
+      <input type="password" id="pwdInput" placeholder="Enter password…" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="leye" onclick="togglePwd()">👁</button>
+    </div>
+    <div class="lerr" id="lerr"></div>
+    <button class="lbtn" onclick="doLogin()">Login</button>
+    <div class="lcancel" onclick="closeLov()">Cancel</div>
+    <div class="lpwdlink">Forgot password? <span onclick="openChangePwd()">Reset it here</span></div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="ov" id="ov" onclick="maybeCloseOv(event)">
+  <div class="modal">
+    <div class="mimg" id="mImg"><button class="mclose" onclick="closeOv()">✕</button></div>
+    <div class="mbody">
+      <div class="mcat"  id="mCat"></div>
+      <div class="mname" id="mName"></div>
+      <div class="msku"  id="mSku"></div>
+      <div class="mgrid" id="mGrid"></div>
+      <div id="mVarW" style="display:none;margin-bottom:16px"><div class="msect">Variations</div><div class="mvars" id="mVars"></div></div>
+      <div class="avwrap">
+        <div class="avtop"><span class="avlbl">Stock Level</span><span class="avv" id="mAvV"></span></div>
+        <div class="avbar"><div class="avf" id="mAvF"></div></div>
+        <div class="avnote" id="mAvN"></div>
+      </div>
+      <div class="madmin" id="mAdminSec">
+        <div class="madmin-hd">⚡ Staff Controls</div>
+        <div class="stock-row">
+          <label>Update stock:</label>
+          <input type="number" id="stockInput" min="0" value="0"/>
+          <button class="supd" onclick="quickUpdateStock()">Update</button>
+        </div>
+        <div class="macts">
+          <button class="mabtn primary" onclick="editCurrent()">✏️ Edit</button>
+          <button class="mabtn danger"  onclick="deleteCurrent()">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM MODAL -->
+<div class="fov" id="fov" onclick="maybeCloseFov(event)">
+  <div class="fmod">
+    <div class="fhead"><h2 id="formTitle">Add New Product</h2><button class="fclose" onclick="closeFov()">✕</button></div>
+    <div class="fbody">
+      <div class="fg">
+        <div class="field"><label>Product Name <span class="req">*</span></label><input id="f_name" type="text" placeholder="e.g. Cotton T-Shirt"/></div>
+        <div class="field"><label>Category</label><input id="f_category" type="text" placeholder="e.g. Clothing"/></div>
+      </div>
+      <div class="fg">
+        <div class="field"><label>Stock Qty <span class="req">*</span></label><input id="f_stock" type="number" min="0" placeholder="0"/></div>
+        <div class="field"><label>Price ($)</label><input id="f_price" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+      </div>
+      <div class="fg">
+        <div class="field"><label>SKU / Code</label><input id="f_code" type="text" placeholder="e.g. TS-001"/></div>
+        <div class="field"><label>Unit</label><input id="f_unit" type="text" placeholder="pcs / kg / pair"/></div>
+      </div>
+      <div class="fg full">
+        <div class="field"><label>Variations</label><input id="f_variation" type="text" placeholder="S,M,L,XL or Red,Blue,Green"/><span class="hint">Separate with commas</span></div>
+      </div>
+      <div class="fg full">
+        <div class="field"><label>Image URL</label><input id="f_image" type="text" placeholder="https://…"/><span class="hint">Google Drive public link or any direct image URL</span></div>
+      </div>
+      <button class="fsub" id="fsubBtn" onclick="submitForm()"><span id="fsubTxt">✓ Add Product</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="conf" id="conf">
+  <div class="cbox">
+    <div class="cbox-icon">🗑️</div>
+    <h3>Delete Product?</h3>
+    <p id="confMsg"></p>
+    <div class="cbrow"><button class="cno" onclick="closeConf()">Cancel</button><button class="cyes" id="confYes">Yes, Delete</button></div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD -->
+<div class="pov" id="pov">
+  <div class="pbox">
+    <h2>🔑 Change Password</h2>
+    <p>Update the shared staff password. All staff will need to use the new password.</p>
+    <div class="pbf"><label>Current Password</label><input type="password" id="pOld" placeholder="Current password"/></div>
+    <div class="pbf"><label>New Password</label><input type="password" id="pNew" placeholder="At least 4 characters"/></div>
+    <div class="pbf"><label>Confirm New Password</label><input type="password" id="pConf" placeholder="Repeat new password"/></div>
+    <div class="pberr" id="pberr"></div>
+    <button class="pbsub" onclick="changePassword()">Change Password</button>
+    <button class="pbcancel" onclick="closePov()">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ━━━━━━━━━━ CONFIG ━━━━━━━━━━
+const LOW = 10, MID = 30;
+const DEFAULT_PASS = 'staff1234';
+
+// ━━━━━━━━━━ STATE ━━━━━━━━━━
+let all=[], shown=[], maxQ=1;
+let fCat='all', fStock='all', sortBy='name';
+let apiUrl  = localStorage.getItem('sf_url') || '';
+let isStaff = sessionStorage.getItem('sf_auth') === '1';
+let currentP=null, formMode='add';
+
+const getPass = () => localStorage.getItem('sf_pass') || DEFAULT_PASS;
+
+// ━━━━━━━━━━ BOOT ━━━━━━━━━━
+(function(){
+  if(apiUrl){ document.getElementById('apiIn').value=apiUrl; fetchData(); }
+  updateStaffUI();
+})();
+
+// ━━━━━━━━━━ SETUP ━━━━━━━━━━
+function toggleSetup(){
+  const d=document.getElementById('drawer');
+  d.classList.toggle('open');
+  if(d.classList.contains('open'))
+    document.getElementById('pwdSetInput').value = getPass();
+}
+
+function connectSheet(){
+  const v=document.getElementById('apiIn').value.trim();
+  if(!v.includes('script.google.com')){ toast('Invalid Apps Script URL','error'); return; }
+  localStorage.setItem('sf_url',v); apiUrl=v;
+  document.getElementById('drawer').classList.remove('open');
+  fetchData();
+}
+
+function savePassword(){
+  const v=document.getElementById('pwdSetInput').value.trim();
+  if(v.length<4){ toast('Password must be at least 4 characters','error'); return; }
+  localStorage.setItem('sf_pass',v);
+  toast('✅ Staff password saved!','success');
+}
+
+// ━━━━━━━━━━ AUTH ━━━━━━━━━━
+function openLogin(){
+  document.getElementById('pwdInput').value='';
+  document.getElementById('lerr').textContent='';
+  document.getElementById('lov').classList.add('on');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('pwdInput').focus(),200);
+}
+function closeLov(){ document.getElementById('lov').classList.remove('on'); document.body.style.overflow=''; }
+function maybeCloseLov(e){ if(e.target===document.getElementById('lov')) closeLov(); }
+function togglePwd(){ const i=document.getElementById('pwdInput'); i.type=i.type==='password'?'text':'password'; }
+
+function doLogin(){
+  const v=document.getElementById('pwdInput').value;
+  if(v===getPass()){
+    isStaff=true; sessionStorage.setItem('sf_auth','1');
+    closeLov(); updateStaffUI();
+    toast('✅ Logged in as staff!','success');
+  } else {
+    document.getElementById('lerr').textContent='Incorrect password. Please try again.';
+    document.getElementById('pwdInput').select();
+  }
+}
+
+function doLogout(){
+  isStaff=false; sessionStorage.removeItem('sf_auth');
+  updateStaffUI(); toast('Logged out','info');
+}
+
+function updateStaffUI(){
+  document.getElementById('loginBtn').style.display  = isStaff?'none':'flex';
+  document.getElementById('addBtn').style.display    = isStaff?'flex':'none';
+  document.getElementById('logoutBtn').style.display = isStaff?'flex':'none';
+  document.getElementById('staffBar').classList.toggle('show', isStaff);
+  const ms=document.getElementById('mAdminSec');
+  if(ms) ms.classList.toggle('show',isStaff);
+  if(shown.length) render();
+}
+
+// ━━━━━━━━━━ CHANGE PASSWORD ━━━━━━━━━━
+function openChangePwd(){ closeLov(); document.getElementById('pov').classList.add('on'); }
+function closePov(){ document.getElementById('pov').classList.remove('on'); }
+
+function changePassword(){
+  const old=document.getElementById('pOld').value;
+  const nw=document.getElementById('pNew').value;
+  const cf=document.getElementById('pConf').value;
+  const err=document.getElementById('pberr');
+  if(old!==getPass()){ err.textContent='Current password is incorrect.'; return; }
+  if(nw.length<4){ err.textContent='New password must be at least 4 characters.'; return; }
+  if(nw!==cf){ err.textContent='Passwords do not match.'; return; }
+  localStorage.setItem('sf_pass',nw);
+  closePov();
+  toast('✅ Password changed successfully!','success');
+}
+
+// ━━━━━━━━━━ FETCH ━━━━━━━━━━
+async function fetchData(){
+  document.getElementById('syncBtn').classList.add('spinning');
+  document.getElementById('grid').innerHTML=`<div class="state"><div class="ldr"><span></span><span></span><span></span></div><p>Loading products…</p></div>`;
+  try{
+    const r=await fetch(apiUrl+'?cb='+Date.now());
+    const j=await r.json();
+    all=parse(j.products||[]);
+    maxQ=Math.max(...all.map(p=>p.stock),1);
+    buildCats(); doFilter(); updateStats();
+    document.getElementById('ldot').style.display='block';
+    document.getElementById('foot').textContent='Last synced: '+new Date().toLocaleString('en-AU');
+    toast(`✅ ${all.length} products loaded`,'success');
+  }catch{
+    document.getElementById('grid').innerHTML=`<div class="state"><span class="ico">⚠️</span><p>Could not load data from Google Sheets</p><small>Check your URL and make sure access is set to "Anyone"</small></div>`;
+    toast('Failed to load data','error');
+  }finally{ document.getElementById('syncBtn').classList.remove('spinning'); }
+}
+
+function syncData(){ if(apiUrl) fetchData(); else toast('Connect a Google Sheet first (⚙ Settings)','info'); }
+setInterval(()=>{ if(apiUrl) fetchData(); }, 300000);
+
+// ━━━━━━━━━━ PARSE ━━━━━━━━━━
+function parse(rows){
+  return rows.map((row,i)=>{
+    const g=(...keys)=>{ for(const k of keys){ const f=Object.keys(row).find(rk=>rk.toLowerCase().includes(k)); if(f!==undefined&&row[f]!=='') return String(row[f]); } return ''; };
+    return {
+      id:i, _row:row._row||0,
+      name:     g('name','product','item')||`Product ${i+1}`,
+      stock:    parseFloat(g('stock','qty','quantity'))||0,
+      price:    parseFloat(g('price','rate','cost'))||0,
+      category: g('category','cat','type')||'Uncategorised',
+      code:     g('code','sku','id'),
+      unit:     g('unit')||'pcs',
+      variations:(g('variation','var','size','colour','color')||'').split(/[,،|\/]/).map(v=>v.trim()).filter(Boolean),
+      image:    g('image','img','photo','picture'),
+    };
+  }).filter(p=>p.name);
+}
+
+// ━━━━━━━━━━ HELPERS ━━━━━━━━━━
+const lv=s=>s<=LOW?'low':s<=MID?'mid':'ok';
+const lvL={ok:'In Stock',mid:'Low Stock',low:'Critical'};
+const lvC={ok:'var(--green)',mid:'var(--amber)',low:'var(--red)'};
+
+// ━━━━━━━━━━ CATEGORIES ━━━━━━━━━━
+function buildCats(){
+  const cs=['All',...new Set(all.map(p=>p.category))];
+  document.getElementById('catStrip').innerHTML=cs.map((c,i)=>
+    `<div class="tag ${i===0?'active':''}" onclick="setCat('${c==='All'?'all':c}',this)">${c}</div>`
+  ).join('');
+}
+function setCat(c,el){ fCat=c; document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); doFilter(); }
+function setSF(s,el){ fStock=s; document.querySelectorAll('.stag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); doFilter(); }
+
+// ━━━━━━━━━━ FILTER + RENDER ━━━━━━━━━━
+function doFilter(){
+  const q=(document.getElementById('hSearch').value||'').toLowerCase().trim();
+  shown=all.filter(p=>{
+    const l=lv(p.stock);
+    return (fCat==='all'||p.category===fCat)&&(fStock==='all'||l===fStock)&&
+           (!q||p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)||p.variations.some(v=>v.toLowerCase().includes(q)));
+  });
+  shown.sort((a,b)=>sortBy==='name'?a.name.localeCompare(b.name):sortBy==='pl'?a.price-b.price:sortBy==='ph'?b.price-a.price:sortBy==='sl'?a.stock-b.stock:b.stock-a.stock);
+  const ri=document.getElementById('ri');
+  if(q){ ri.style.display='flex'; ri.innerHTML=`Results for "<strong>${q}</strong>" &nbsp;<span class="rb">${shown.length} found</span>`; }
+  else ri.style.display='none';
+  render();
+}
+
+function render(){
+  const grid=document.getElementById('grid');
+  if(!shown.length){ grid.innerHTML=`<div class="state"><span class="ico">🔍</span><p>No products found</p></div>`; return; }
+  grid.innerHTML=shown.map((p,i)=>{
+    const l=lv(p.stock),clr=lvC[l],bw=Math.min(p.stock/maxQ*100,100).toFixed(1);
+    const img=p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`:`<div class="noimg">📦</div>`;
+    const vps=p.variations.length?`<div class="vpills">${p.variations.slice(0,4).map(v=>`<span class="vp">${v}</span>`).join('')}${p.variations.length>4?`<span class="vp">+${p.variations.length-4}</span>`:''}</div>`:'';
+    const staffOv=isStaff?`<div class="cadmin show"><button class="cact edit" onclick="event.stopPropagation();editIdx(${i})">✏️ Edit</button><button class="cact del" onclick="event.stopPropagation();confirmDel(${i})">🗑 Delete</button></div>`:'';
+    return `<div class="card" style="animation-delay:${i*.04}s" onclick="openDetail(${i})">
+      <div class="cimg">${img}<div class="ibadge ${l}">${lvL[l]}</div>${staffOv}</div>
+      <div class="cbody">
+        <div class="ccat">${p.category}</div>
+        <div class="cname">${p.name}</div>
+        ${p.code?`<div class="csku">#${p.code}</div>`:''}
+        ${vps}
+        <div class="cfoot"><div class="cprice">${p.price?'$'+p.price.toFixed(2):'—'}</div><div class="cstk">Stock: <strong>${p.stock}</strong> ${p.unit}</div></div>
+        <div class="sbar"><div class="sbf" style="width:${bw}%;background:${clr}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats(){
+  document.getElementById('sTotal').textContent=all.length;
+  document.getElementById('sOk').textContent=all.filter(p=>lv(p.stock)==='ok').length;
+  document.getElementById('sMid').textContent=all.filter(p=>lv(p.stock)==='mid').length;
+  document.getElementById('sLow').textContent=all.filter(p=>lv(p.stock)==='low').length;
+}
+
+// ━━━━━━━━━━ DETAIL MODAL ━━━━━━━━━━
+function openDetail(i){
+  currentP=shown[i];
+  const p=currentP,l=lv(p.stock),clr=lvC[l],bw=Math.min(p.stock/maxQ*100,100).toFixed(1);
+  const iw=document.getElementById('mImg');
+  iw.innerHTML=`<button class="mclose" onclick="closeOv()">✕</button>`;
+  if(p.image){ const im=new Image(); im.src=p.image; im.alt=p.name; iw.appendChild(im); }
+  else{ const d=document.createElement('div'); d.className='noimg-lg'; d.textContent='📦'; iw.appendChild(d); }
+  document.getElementById('mCat').textContent=p.category;
+  document.getElementById('mName').textContent=p.name;
+  document.getElementById('mSku').textContent=p.code?'SKU: '+p.code:'';
+  document.getElementById('mGrid').innerHTML=`
+    <div class="mbox"><div class="mk">Price</div><div class="mv">${p.price?'$'+p.price.toFixed(2):'—'}</div></div>
+    <div class="mbox"><div class="mk">Stock</div><div class="mv ${l}">${p.stock} ${p.unit}</div></div>
+    <div class="mbox"><div class="mk">Status</div><div class="mv ${l}">${lvL[l]}</div></div>`;
+  const vw=document.getElementById('mVarW');
+  if(p.variations.length){ vw.style.display='block'; document.getElementById('mVars').innerHTML=p.variations.map(v=>`<div class="mvar">${v}</div>`).join(''); }
+  else vw.style.display='none';
+  document.getElementById('mAvV').textContent=lvL[l]; document.getElementById('mAvV').style.color=clr;
+  document.getElementById('mAvF').style.width=bw+'%'; document.getElementById('mAvF').style.background=clr;
+  document.getElementById('mAvN').textContent=`${p.stock} ${p.unit} currently in stock`;
+  document.getElementById('stockInput').value=p.stock;
+  document.getElementById('mAdminSec').classList.toggle('show',isStaff);
+  document.getElementById('ov').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeOv(){ document.getElementById('ov').classList.remove('on'); document.body.style.overflow=''; }
+function maybeCloseOv(e){ if(e.target===document.getElementById('ov')) closeOv(); }
+function editCurrent(){ if(currentP){ closeOv(); openForm(currentP); } }
+function deleteCurrent(){ if(currentP){ closeOv(); confirmDel(shown.indexOf(currentP)); } }
+
+// ━━━━━━━━━━ QUICK STOCK UPDATE ━━━━━━━━━━
+async function quickUpdateStock(){
+  if(!currentP||!isStaff) return;
+  const ns=parseInt(document.getElementById('stockInput').value)||0;
+  if(!apiUrl){
+    const p=all.find(x=>x.id===currentP.id); if(p){ p.stock=ns; currentP.stock=ns; }
+    maxQ=Math.max(...all.map(x=>x.stock),1); updateStats(); doFilter(); closeOv();
+    toast('Stock updated (demo mode)','success'); return;
+  }
+  try{
+    await apiPost({action:'update_stock',row:currentP._row,stock:ns});
+    toast('✅ Stock updated!','success'); closeOv(); setTimeout(fetchData,600);
+  }catch{ toast('Failed to update stock','error'); }
+}
+
+// ━━━━━━━━━━ FORM ━━━━━━━━━━
+function openForm(product=null){
+  if(!isStaff){ toast('Please log in as staff first','error'); return; }
+  formMode=product?'edit':'add';
+  document.getElementById('formTitle').textContent=product?'Edit Product':'Add New Product';
+  document.getElementById('fsubTxt').textContent=product?'✓ Save Changes':'✓ Add Product';
+  ['name','category','stock','price','code','unit','variation','image'].forEach(f=>{
+    document.getElementById('f_'+f).value=product?(f==='variation'?(product.variations||[]).join(','):(product[f]||'')):'';
+  });
+  if(product) document.getElementById('fov')._ep=product;
+  document.getElementById('fov').classList.add('on');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('f_name').focus(),200);
+}
+function closeFov(){ document.getElementById('fov').classList.remove('on'); document.body.style.overflow=''; }
+function maybeCloseFov(e){ if(e.target===document.getElementById('fov')) closeFov(); }
+function editIdx(i){ openForm(shown[i]); }
+
+async function submitForm(){
+  const name=document.getElementById('f_name').value.trim();
+  const stock=document.getElementById('f_stock').value;
+  if(!name||stock===''){ toast('Product name and stock are required','error'); return; }
+  const data={name,stock:parseFloat(stock)||0,price:parseFloat(document.getElementById('f_price').value)||0,category:document.getElementById('f_category').value.trim()||'Uncategorised',code:document.getElementById('f_code').value.trim(),unit:document.getElementById('f_unit').value.trim()||'pcs',variation:document.getElementById('f_variation').value.trim(),image:document.getElementById('f_image').value.trim()};
+  const btn=document.getElementById('fsubBtn'); btn.disabled=true; document.getElementById('fsubTxt').textContent='Saving…';
+  if(!apiUrl){
+    if(formMode==='edit'){
+      const ep=document.getElementById('fov')._ep;
+      const idx=all.findIndex(x=>x.id===ep.id);
+      if(idx!==-1) all[idx]={...all[idx],...data,variations:(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean)};
+    } else { all.push({id:all.length,_row:0,...data,variations:(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean)}); }
+    maxQ=Math.max(...all.map(p=>p.stock),1); buildCats(); doFilter(); updateStats(); closeFov();
+    toast(formMode==='edit'?'✅ Product updated (demo)':'✅ Product added (demo)','success');
+    btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product'; return;
+  }
+  try{
+    const ep=document.getElementById('fov')._ep;
+    const res=await apiPost(formMode==='edit'?{action:'edit',row:ep._row,data}:{action:'add',data});
+    toast(res.message||'Done!','success'); closeFov(); setTimeout(fetchData,700);
+  }catch{ toast('Failed to save product','error'); }
+  finally{ btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product'; }
+}
+
+// ━━━━━━━━━━ DELETE ━━━━━━━━━━
+function confirmDel(i){
+  const p=shown[i];
+  document.getElementById('confMsg').textContent=`"${p.name}" will be permanently removed from your inventory.`;
+  document.getElementById('conf').classList.add('on');
+  document.getElementById('confYes').onclick=()=>doDelete(p);
+}
+function closeConf(){ document.getElementById('conf').classList.remove('on'); }
+
+async function doDelete(p){
+  closeConf();
+  if(!apiUrl){
+    all=all.filter(x=>x.id!==p.id); maxQ=Math.max(...all.map(x=>x.stock),1);
+    buildCats(); doFilter(); updateStats(); toast('Product deleted (demo)','info'); return;
+  }
+  try{ await apiPost({action:'delete',row:p._row}); toast('Product deleted','info'); setTimeout(fetchData,700); }
+  catch{ toast('Failed to delete','error'); }
+}
+
+// ━━━━━━━━━━ API ━━━━━━━━━━
+async function apiPost(body){
+  const r=await fetch(apiUrl,{method:'POST',body:JSON.stringify(body)});
+  const j=await r.json();
+  if(j.error) throw new Error(j.error);
+  return j;
+}
+
+// ━━━━━━━━━━ DEMO ━━━━━━━━━━
+function loadDemo(){
+  all=[
+    {id:0,_row:2,name:'Premium Cotton T-Shirt',stock:48,price:29.95,category:'Clothing',code:'TS-001',unit:'pcs',variations:['XS','S','M','L','XL','XXL'],image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80'},
+    {id:1,_row:3,name:'Classic Denim Jeans',stock:7,price:79.95,category:'Clothing',code:'DJ-002',unit:'pcs',variations:['28','30','32','34','36'],image:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80'},
+    {id:2,_row:4,name:'Floral Midi Dress',stock:22,price:59.95,category:'Clothing',code:'DR-003',unit:'pcs',variations:['XS','S','M','L'],image:'https://images.unsplash.com/photo-1594938298603-c8148c4b4571?w=400&q=80'},
+    {id:3,_row:5,name:'Merino Wool Scarf',stock:3,price:49.95,category:'Accessories',code:'SC-004',unit:'pcs',variations:['Navy','Cream','Charcoal'],image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&q=80'},
+    {id:4,_row:6,name:'Leather Sneakers',stock:15,price:129.95,category:'Footwear',code:'SN-005',unit:'pairs',variations:['US6','US7','US8','US9','US10','US11'],image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'},
+    {id:5,_row:7,name:'Canvas Tote Bag',stock:2,price:24.95,category:'Bags',code:'TB-006',unit:'pcs',variations:['Natural','Black','Olive'],image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80'},
+    {id:6,_row:8,name:'Stainless Steel Watch',stock:11,price:199.95,category:'Accessories',code:'WA-007',unit:'pcs',variations:['Silver','Gold','Rose Gold'],image:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80'},
+    {id:7,_row:9,name:'Polarised Sunglasses',stock:34,price:39.95,category:'Accessories',code:'SG-008',unit:'pcs',variations:['Black','Tortoise','Blue'],image:'https://images.unsplash.com/photo-1509695507497-903c140c43b0?w=400&q=80'},
+    {id:8,_row:10,name:'Linen Shirt',stock:0,price:69.95,category:'Clothing',code:'LN-009',unit:'pcs',variations:['S','M','L','XL'],image:'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&q=80'},
+  ];
+  maxQ=Math.max(...all.map(p=>p.stock),1);
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('ldot').style.display='block';
+  buildCats(); doFilter(); updateStats();
+  toast('Demo loaded — try Staff Login to manage products','success');
+}
+
+// ━━━━━━━━━━ TOAST + KEYS ━━━━━━━━━━
+function toast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+type+' on';
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3200);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeOv(); closeFov(); closeConf(); closeLov(); closePov(); }
+  if(e.key==='Enter'&&document.getElementById('lov').classList.contains('on')) doLogin();
+});
+</script>
+</body>
+</html>
