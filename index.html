@@ -20,19 +20,17 @@
   --amber-l: #fffbeb;
   --red:     #dc2626;
   --red-l:   #fef2f2;
-  --purple:  #7c3aed;
-  --purple-l:#f5f3ff;
   --muted:   #6b7280;
   --border:  #e5e7eb;
   --sh:  0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.07);
-  --shl: 0 8px 40px rgba(0,0,0,.13);
+  --shl: 0 8px 48px rgba(0,0,0,.14);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 
 /* ── HEADER ── */
-header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+header{background:var(--ink);position:sticky;top:0;z-index:300}
 .hi{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:16px;height:60px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:white;flex-shrink:0}
 .bmark{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
@@ -51,10 +49,9 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .hbtn.success{background:var(--green);border-color:var(--green);color:white}
 .hbtn.success:hover{opacity:.88}
 .hbtn.ghost{border-color:rgba(255,255,255,.22)}
-/* staff bar */
 .staff-bar{background:linear-gradient(90deg,#1d4ed8,#7c3aed);padding:7px 24px;display:none;align-items:center;justify-content:center;gap:10px;font-size:12px;color:white;font-weight:500}
 .staff-bar.show{display:flex}
-.staff-bar .sb-badge{background:rgba(255,255,255,.2);padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.sb-badge{background:rgba(255,255,255,.2);padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px}
 .spin{display:inline-block}.spinning .spin{animation:rot 1s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 .ldot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 6px #34d399;animation:pd 2s ease infinite}
@@ -62,46 +59,38 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 
 /* ── SETUP DRAWER ── */
 .drawer{background:#1a1d27;border-bottom:1px solid rgba(255,255,255,.07);overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
-.drawer.open{max-height:360px}
+.drawer.open{max-height:380px}
 .dri{max-width:900px;margin:0 auto;padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
 .dri h3{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
-.urow{display:flex;gap:8px}
+.urow{display:flex;gap:8px;margin-bottom:10px}
 .ui{flex:1;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;color:white;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:.2s}
 .ui:focus{border-color:var(--blue)}
 .ui::placeholder{color:rgba(255,255,255,.22)}
 .cbtn{padding:10px 18px;background:var(--blue);border:none;border-radius:7px;color:white;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
 .cbtn:hover{opacity:.85}
-.schema{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px 14px}
-.sr{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
-.sr:last-child{border:none}
-.sc{font-family:'Courier New',monospace;color:#60a5fa;font-size:11px;min-width:86px}
-.sd{color:rgba(255,255,255,.36)}
-.srq{margin-left:auto;font-size:10px;color:rgba(255,255,255,.2)}
+.cbtn.purple{background:#7c3aed}
+.info-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:14px 16px}
+.info-box p{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7}
+.info-box code{color:#60a5fa;font-family:'Courier New',monospace;font-size:11px;background:rgba(96,165,250,.1);padding:1px 5px;border-radius:3px}
 .dcta{margin-top:12px;font-size:12px;color:rgba(255,255,255,.28);cursor:pointer;transition:.2s}
 .dcta:hover{color:rgba(255,255,255,.6)}
 .dcta span{text-decoration:underline}
 
 /* ── MAIN ── */
 .main{max-width:1320px;margin:0 auto;padding:24px}
-
-/* stats */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
-.sc2{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
-.sc2::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
-.sc2.sa::after{background:var(--ink)}.sc2.sg::after{background:var(--green)}.sc2.sw::after{background:var(--amber)}.sc2.sr2::after{background:var(--red)}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.sc.sa::after{background:var(--ink)}.sc.sg::after{background:var(--green)}.sc.sw::after{background:var(--amber)}.sc.sr::after{background:var(--red)}
 .si{font-size:22px;flex-shrink:0}
 .sn{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1}
-.sc2.sg .sn{color:var(--green)}.sc2.sw .sn{color:var(--amber)}.sc2.sr2 .sn{color:var(--red)}
+.sc.sg .sn{color:var(--green)}.sc.sw .sn{color:var(--amber)}.sc.sr .sn{color:var(--red)}
 .sl{font-size:11px;color:var(--muted);margin-top:3px}
-
-/* categories */
 .cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px;scrollbar-width:none}
 .cats::-webkit-scrollbar{display:none}
 .tag{padding:6px 15px;border:1.5px solid var(--border);background:var(--surface);border-radius:20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:.18s}
 .tag:hover{border-color:var(--ink);color:var(--ink)}
 .tag.active{background:var(--ink);color:white;border-color:var(--ink)}
-
-/* toolbar */
 .bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .stags{display:flex;gap:6px}
 .stag{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:.18s}
@@ -117,13 +106,13 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 /* ── GRID ── */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s,border-color .22s;animation:fup .25s ease both;box-shadow:var(--sh)}
-.card:hover{transform:translateY(-3px);box-shadow:var(--shl);border-color:rgba(37,99,235,.4)}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shl);border-color:rgba(37,99,235,.35)}
 @keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .cimg{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--paper);position:relative}
 .cimg img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
 .card:hover .cimg img{transform:scale(1.05)}
 .noimg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--sand)}
-.ibadge{position:absolute;top:8px;right:8px;padding:3px 10px;border-radius:17px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.ibadge{position:absolute;top:8px;right:8px;padding:3px 10px;border-radius:17px;font-size:10px;font-weight:700}
 .ibadge.ok{background:rgba(5,150,105,.9);color:white}
 .ibadge.mid{background:rgba(217,119,6,.9);color:white}
 .ibadge.low{background:rgba(220,38,38,.9);color:white}
@@ -145,7 +134,7 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .sbar{height:3px;background:var(--paper);border-radius:2px;margin-top:9px;overflow:hidden}
 .sbf{height:100%;border-radius:2px;transition:width .5s}
 
-/* ── STATES ── */
+/* ── STATE ── */
 .state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted)}
 .state .ico{font-size:50px;margin-bottom:14px;opacity:.35;display:block}
 .state p{font-size:16px;font-weight:500}
@@ -170,19 +159,17 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .leye{position:absolute;right:12px;bottom:12px;cursor:pointer;opacity:.4;font-size:16px;background:none;border:none;padding:0;transition:.2s}
 .leye:hover{opacity:.8}
 .lerr{font-size:12px;color:var(--red);margin-bottom:12px;min-height:16px;text-align:left;font-weight:500}
-.lbtn{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
+.lbtn{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
 .lbtn:hover{opacity:.88}
-.lbtn:active{transform:scale(.98)}
 .lcancel{margin-top:12px;font-size:13px;color:var(--muted);cursor:pointer;font-weight:500}
 .lcancel:hover{color:var(--ink)}
 .lpwdlink{margin-top:16px;font-size:12px;color:var(--muted)}
 .lpwdlink span{text-decoration:underline;cursor:pointer;color:var(--blue)}
-.lpwdlink span:hover{opacity:.8}
 
 /* ── DETAIL MODAL ── */
 .ov{position:fixed;inset:0;background:rgba(15,17,23,.55);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
 .ov.on{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shl);transform:scale(.96) translateY(8px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
+.modal{background:var(--surface);border-radius:18px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:var(--shl);transform:scale(.96) translateY(8px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
 .ov.on .modal{transform:scale(1) translateY(0)}
 .mimg{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--paper);position:relative;border-radius:18px 18px 0 0}
 .mimg img{width:100%;height:100%;object-fit:cover}
@@ -193,14 +180,29 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .mcat{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--muted);font-weight:600;margin-bottom:5px}
 .mname{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1.25;margin-bottom:3px}
 .msku{font-size:12px;color:var(--muted);font-family:'Courier New',monospace;margin-bottom:18px}
+
+/* Core info boxes */
 .mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
 .mbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 13px}
 .mbox .mk{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:4px}
-.mbox .mv{font-family:'Syne',sans-serif;font-size:19px;font-weight:800}
+.mbox .mv{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
 .mv.ok{color:var(--green)}.mv.mid{color:var(--amber)}.mv.low{color:var(--red)}
+
+/* ── DYNAMIC EXTRA FIELDS ── */
+.extra-fields{margin-bottom:18px}
+.ef-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ef-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.ef-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ef-item{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 13px;display:flex;flex-direction:column;gap:3px}
+.ef-key{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600}
+.ef-val{font-size:14px;font-weight:600;color:var(--ink);word-break:break-word}
+
+/* variations */
 .msect{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;color:var(--muted);margin-bottom:8px}
 .mvars{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
 .mvar{padding:6px 14px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-weight:600}
+
+/* stock bar */
 .avwrap{background:var(--bg);border-radius:11px;padding:14px}
 .avtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
 .avlbl{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
@@ -208,10 +210,11 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .avbar{height:6px;background:var(--sand);border-radius:3px;overflow:hidden}
 .avf{height:100%;border-radius:3px;transition:width .6s}
 .avnote{font-size:11px;color:var(--muted);margin-top:5px}
-/* staff controls in modal */
+
+/* staff controls */
 .madmin{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:none}
 .madmin.show{display:block}
-.madmin-hd{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blue);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.madmin-hd{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blue);font-weight:700;margin-bottom:12px}
 .stock-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--bg);padding:11px 13px;border-radius:9px}
 .stock-row label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
 .stock-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;outline:none;text-align:center;transition:.2s;max-width:100px}
@@ -229,7 +232,7 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 /* ── FORM MODAL ── */
 .fov{position:fixed;inset:0;background:rgba(15,17,23,.65);backdrop-filter:blur(7px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
 .fov.on{opacity:1;pointer-events:all}
-.fmod{background:var(--surface);border-radius:18px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:var(--shl);transform:translateY(14px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
+.fmod{background:var(--surface);border-radius:18px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:var(--shl);transform:translateY(14px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
 .fov.on .fmod{transform:translateY(0)}
 .fhead{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .fhead h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
@@ -240,10 +243,22 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .fg.full{grid-template-columns:1fr}
 .field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
 .field label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
-.field input,.field select{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:.2s;background:var(--surface);width:100%}
-.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);background:var(--blue-l)}
+.field input,.field select,.field textarea{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:.2s;background:var(--surface);width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);background:var(--blue-l)}
+.field textarea{resize:vertical;min-height:70px}
 .field .hint{font-size:11px;color:var(--muted)}
 .req{color:var(--red)}
+
+/* Dynamic extra fields in form */
+.extra-form-fields{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.ef-form-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ef-form-title span{background:var(--blue);color:white;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.ef-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ef-form-field{display:flex;flex-direction:column;gap:4px}
+.ef-form-field label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600}
+.ef-form-field input,.ef-form-field textarea{padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:.2s;background:white;width:100%}
+.ef-form-field input:focus,.ef-form-field textarea:focus{border-color:var(--blue);background:var(--blue-l)}
+
 .fsub{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .fsub:hover{opacity:.88}
 .fsub:disabled{opacity:.5;cursor:not-allowed}
@@ -253,7 +268,7 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .conf.on{opacity:1;pointer-events:all}
 .cbox{background:var(--surface);border-radius:16px;padding:28px 26px;max-width:340px;width:100%;text-align:center;box-shadow:var(--shl);transform:scale(.94);transition:transform .2s}
 .conf.on .cbox{transform:scale(1)}
-.cbox-icon{font-size:36px;margin-bottom:12px}
+.cbox-ico{font-size:36px;margin-bottom:12px}
 .cbox h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:7px}
 .cbox p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
 .cbrow{display:flex;gap:8px}
@@ -282,36 +297,33 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);padding:11px 22px;border-radius:24px;font-size:13px;z-index:9999;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.3,.64,1);white-space:nowrap;font-family:'Inter',sans-serif;color:white;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.18)}
 .toast.on{transform:translateX(-50%) translateY(0)}
 .toast.success{background:#059669}.toast.error{background:#dc2626}.toast.info{background:var(--ink)}
-
 .foot{text-align:center;padding:24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:36px}
 
-@media(max-width:960px){.stats{grid-template-columns:1fr 1fr}.mgrid{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:10px}.hs{display:none}.dri{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr;gap:10px}.main{padding:14px}.fg{grid-template-columns:1fr}.hbtn span{display:none}}
+@media(max-width:960px){.stats{grid-template-columns:1fr 1fr}.mgrid{grid-template-columns:1fr 1fr}.ef-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:10px}.hs{display:none}.dri{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr;gap:10px}.main{padding:14px}.fg{grid-template-columns:1fr}.ef-form-grid{grid-template-columns:1fr}}
 @media(max-width:400px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="hi">
     <a class="brand" href="#"><div class="bmark">📦</div><div><div class="bname">Stockflow</div><div class="bsub">Inventory</div></div></a>
     <div class="hs"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="hSearch" placeholder="Search products, SKU, category…" oninput="doFilter()"/></div>
     <div class="hbtns">
-      <div id="ldot" class="ldot" style="display:none" title="Connected"></div>
-      <button class="hbtn" id="syncBtn" onclick="syncData()"><span class="spin">↻</span> <span>Refresh</span></button>
-      <button class="hbtn success" id="addBtn" onclick="openForm()" style="display:none">＋ <span>Add Product</span></button>
-      <button class="hbtn primary" id="loginBtn" onclick="openLogin()">🔒 <span>Staff Login</span></button>
-      <button class="hbtn ghost" id="logoutBtn" onclick="doLogout()" style="display:none">🔓 <span>Logout</span></button>
-      <button class="hbtn" id="stBtn" onclick="toggleSetup()" title="Settings">⚙</button>
+      <div id="ldot" class="ldot" style="display:none"></div>
+      <button class="hbtn" id="syncBtn" onclick="syncData()"><span class="spin">↻</span> Refresh</button>
+      <button class="hbtn success" id="addBtn" onclick="openForm()" style="display:none">＋ Add Product</button>
+      <button class="hbtn primary" id="loginBtn" onclick="openLogin()">🔒 Staff Login</button>
+      <button class="hbtn ghost" id="logoutBtn" onclick="doLogout()" style="display:none">🔓 Logout</button>
+      <button class="hbtn" id="stBtn" onclick="toggleSetup()">⚙</button>
     </div>
   </div>
 </header>
 
-<!-- STAFF BAR -->
 <div class="staff-bar" id="staffBar">
   <span class="sb-badge">STAFF MODE</span>
-  You're logged in as staff — you can add, edit, delete and update stock
+  Logged in as staff — add, edit, delete and update stock
 </div>
 
 <!-- SETUP DRAWER -->
@@ -320,23 +332,21 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
     <div>
       <h3>Connect Google Sheets</h3>
       <div class="urow"><input class="ui" id="apiIn" type="text" placeholder="https://script.google.com/macros/s/…/exec"/><button class="cbtn" onclick="connectSheet()">Connect</button></div>
-      <div style="margin-top:14px">
+      <div>
         <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;font-weight:600">Staff Password</div>
-        <div class="urow"><input class="ui" id="pwdSetInput" type="password" placeholder="Set staff password…"/><button class="cbtn" onclick="savePassword()" style="background:#7c3aed">Save</button></div>
+        <div class="urow"><input class="ui" id="pwdSetInput" type="password" placeholder="Set staff password…"/><button class="cbtn purple" onclick="savePassword()">Save</button></div>
       </div>
       <div class="dcta" onclick="loadDemo()">or <span>load demo data</span> →</div>
     </div>
     <div>
-      <h3>Sheet Column Names</h3>
-      <div class="schema">
-        <div class="sr"><span class="sc">name</span><span class="sd">Product name</span><span class="srq">⚠ required</span></div>
-        <div class="sr"><span class="sc">stock</span><span class="sd">Stock quantity</span><span class="srq">⚠ required</span></div>
-        <div class="sr"><span class="sc">price</span><span class="sd">Price ($)</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">category</span><span class="sd">Category</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">variation</span><span class="sd">S,M,L or Red,Blue</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">code</span><span class="sd">SKU / Product code</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">unit</span><span class="sd">pcs / kg / pair</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">image</span><span class="sd">Image URL</span><span class="srq">optional</span></div>
+      <h3>How Dynamic Columns Work</h3>
+      <div class="info-box">
+        <p>
+          Your <strong style="color:white">core columns</strong> are auto-detected:<br>
+          <code>name</code> <code>stock</code> <code>price</code> <code>category</code> <code>variation</code> <code>code</code> <code>unit</code> <code>image</code><br><br>
+          <strong style="color:white">Any extra column</strong> you add to your Sheet will automatically appear in the product detail panel — no code changes needed.<br><br>
+          Example: Add a <code>supplier</code>, <code>barcode</code>, <code>weight</code>, or <code>notes</code> column and it shows up instantly! ✨
+        </p>
       </div>
     </div>
   </div>
@@ -345,10 +355,10 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 <!-- MAIN -->
 <div class="main">
   <div class="stats">
-    <div class="sc2 sa"><div class="si">📦</div><div><div class="sn" id="sTotal">0</div><div class="sl">Total Products</div></div></div>
-    <div class="sc2 sg"><div class="si">✅</div><div><div class="sn" id="sOk">0</div><div class="sl">In Stock</div></div></div>
-    <div class="sc2 sw"><div class="si">⚠️</div><div><div class="sn" id="sMid">0</div><div class="sl">Low Warning</div></div></div>
-    <div class="sc2 sr2"><div class="si">🚨</div><div><div class="sn" id="sLow">0</div><div class="sl">Critical Stock</div></div></div>
+    <div class="sc sa"><div class="si">📦</div><div><div class="sn" id="sTotal">0</div><div class="sl">Total Products</div></div></div>
+    <div class="sc sg"><div class="si">✅</div><div><div class="sn" id="sOk">0</div><div class="sl">In Stock</div></div></div>
+    <div class="sc sw"><div class="si">⚠️</div><div><div class="sn" id="sMid">0</div><div class="sl">Low Warning</div></div></div>
+    <div class="sc sr"><div class="si">🚨</div><div><div class="sn" id="sLow">0</div><div class="sl">Critical Stock</div></div></div>
   </div>
   <div class="cats" id="catStrip"></div>
   <div class="bar">
@@ -368,13 +378,13 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
   </div>
   <div class="ri" id="ri" style="display:none"></div>
   <div class="grid" id="grid">
-    <div class="state"><p>Connect your Google Sheet or load demo</p><small>Click ⚙ Settings to get started</small></div>
+    <div class="state"><p>Connect your Google Sheet or load demo</p><small>Click ⚙ to get started</small></div>
   </div>
   <div class="foot" id="foot"></div>
 </div>
 
-<!-- LOGIN MODAL -->
-<div class="lov" id="lov" onclick="maybeCloseLov(event)">
+<!-- LOGIN -->
+<div class="lov" id="lov" onclick="maybeClose('lov',event)">
   <div class="lbox">
     <div class="lbox-icon">🔐</div>
     <h2>Staff Login</h2>
@@ -392,20 +402,29 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 </div>
 
 <!-- DETAIL MODAL -->
-<div class="ov" id="ov" onclick="maybeCloseOv(event)">
+<div class="ov" id="ov" onclick="maybeClose('ov',event)">
   <div class="modal">
     <div class="mimg" id="mImg"><button class="mclose" onclick="closeOv()">✕</button></div>
     <div class="mbody">
       <div class="mcat"  id="mCat"></div>
       <div class="mname" id="mName"></div>
       <div class="msku"  id="mSku"></div>
+      <!-- Core info boxes -->
       <div class="mgrid" id="mGrid"></div>
+      <!-- Variations -->
       <div id="mVarW" style="display:none;margin-bottom:16px"><div class="msect">Variations</div><div class="mvars" id="mVars"></div></div>
+      <!-- ★ DYNAMIC EXTRA FIELDS — auto-generated from Sheet columns ★ -->
+      <div class="extra-fields" id="mExtra" style="display:none">
+        <div class="ef-title">Additional Details</div>
+        <div class="ef-grid" id="mExtraGrid"></div>
+      </div>
+      <!-- Stock bar -->
       <div class="avwrap">
         <div class="avtop"><span class="avlbl">Stock Level</span><span class="avv" id="mAvV"></span></div>
         <div class="avbar"><div class="avf" id="mAvF"></div></div>
         <div class="avnote" id="mAvN"></div>
       </div>
+      <!-- Staff controls -->
       <div class="madmin" id="mAdminSec">
         <div class="madmin-hd">⚡ Staff Controls</div>
         <div class="stock-row">
@@ -423,10 +442,11 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 </div>
 
 <!-- FORM MODAL -->
-<div class="fov" id="fov" onclick="maybeCloseFov(event)">
+<div class="fov" id="fov" onclick="maybeClose('fov',event)">
   <div class="fmod">
     <div class="fhead"><h2 id="formTitle">Add New Product</h2><button class="fclose" onclick="closeFov()">✕</button></div>
     <div class="fbody">
+      <!-- Core fields -->
       <div class="fg">
         <div class="field"><label>Product Name <span class="req">*</span></label><input id="f_name" type="text" placeholder="e.g. Cotton T-Shirt"/></div>
         <div class="field"><label>Category</label><input id="f_category" type="text" placeholder="e.g. Clothing"/></div>
@@ -445,6 +465,11 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
       <div class="fg full">
         <div class="field"><label>Image URL</label><input id="f_image" type="text" placeholder="https://…"/><span class="hint">Google Drive public link or any direct image URL</span></div>
       </div>
+      <!-- ★ DYNAMIC EXTRA FIELDS — auto-generated from Sheet columns ★ -->
+      <div class="extra-form-fields" id="fExtraWrap" style="display:none">
+        <div class="ef-form-title"><span>+</span> Extra Fields from your Sheet</div>
+        <div class="ef-form-grid" id="fExtraGrid"></div>
+      </div>
       <button class="fsub" id="fsubBtn" onclick="submitForm()"><span id="fsubTxt">✓ Add Product</span></button>
     </div>
   </div>
@@ -453,7 +478,7 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 <!-- CONFIRM -->
 <div class="conf" id="conf">
   <div class="cbox">
-    <div class="cbox-icon">🗑️</div>
+    <div class="cbox-ico">🗑️</div>
     <h3>Delete Product?</h3>
     <p id="confMsg"></p>
     <div class="cbrow"><button class="cno" onclick="closeConf()">Cancel</button><button class="cyes" id="confYes">Yes, Delete</button></div>
@@ -464,7 +489,7 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 <div class="pov" id="pov">
   <div class="pbox">
     <h2>🔑 Change Password</h2>
-    <p>Update the shared staff password. All staff will need to use the new password.</p>
+    <p>Update the shared staff password. All staff will need to use the new one.</p>
     <div class="pbf"><label>Current Password</label><input type="password" id="pOld" placeholder="Current password"/></div>
     <div class="pbf"><label>New Password</label><input type="password" id="pNew" placeholder="At least 4 characters"/></div>
     <div class="pbf"><label>Confirm New Password</label><input type="password" id="pConf" placeholder="Repeat new password"/></div>
@@ -477,12 +502,18 @@ header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 
 <div class="toast" id="toast"></div>
 
 <script>
-// ━━━━━━━━━━ CONFIG ━━━━━━━━━━
+// ━━━━━━━━━━ CONSTANTS ━━━━━━━━━━
 const LOW = 10, MID = 30;
 const DEFAULT_PASS = 'staff1234';
 
+// Core columns — everything else is treated as "extra" and shown dynamically
+const CORE_COLS = new Set(['name','stock','price','category','variation','code','unit','image','_row',
+  // common synonyms
+  'product','item','qty','quantity','rate','cost','cat','type','sku','id','img','photo','picture','colour','color','size','var']);
+
 // ━━━━━━━━━━ STATE ━━━━━━━━━━
 let all=[], shown=[], maxQ=1;
+let extraCols = []; // extra column names detected from sheet
 let fCat='all', fStock='all', sortBy='name';
 let apiUrl  = localStorage.getItem('sf_url') || '';
 let isStaff = sessionStorage.getItem('sf_auth') === '1';
@@ -501,9 +532,8 @@ function toggleSetup(){
   const d=document.getElementById('drawer');
   d.classList.toggle('open');
   if(d.classList.contains('open'))
-    document.getElementById('pwdSetInput').value = getPass();
+    document.getElementById('pwdSetInput').value=getPass();
 }
-
 function connectSheet(){
   const v=document.getElementById('apiIn').value.trim();
   if(!v.includes('script.google.com')){ toast('Invalid Apps Script URL','error'); return; }
@@ -511,7 +541,6 @@ function connectSheet(){
   document.getElementById('drawer').classList.remove('open');
   fetchData();
 }
-
 function savePassword(){
   const v=document.getElementById('pwdSetInput').value.trim();
   if(v.length<4){ toast('Password must be at least 4 characters','error'); return; }
@@ -528,7 +557,6 @@ function openLogin(){
   setTimeout(()=>document.getElementById('pwdInput').focus(),200);
 }
 function closeLov(){ document.getElementById('lov').classList.remove('on'); document.body.style.overflow=''; }
-function maybeCloseLov(e){ if(e.target===document.getElementById('lov')) closeLov(); }
 function togglePwd(){ const i=document.getElementById('pwdInput'); i.type=i.type==='password'?'text':'password'; }
 
 function doLogin(){
@@ -542,17 +570,15 @@ function doLogin(){
     document.getElementById('pwdInput').select();
   }
 }
-
 function doLogout(){
   isStaff=false; sessionStorage.removeItem('sf_auth');
   updateStaffUI(); toast('Logged out','info');
 }
-
 function updateStaffUI(){
   document.getElementById('loginBtn').style.display  = isStaff?'none':'flex';
   document.getElementById('addBtn').style.display    = isStaff?'flex':'none';
   document.getElementById('logoutBtn').style.display = isStaff?'flex':'none';
-  document.getElementById('staffBar').classList.toggle('show', isStaff);
+  document.getElementById('staffBar').classList.toggle('show',isStaff);
   const ms=document.getElementById('mAdminSec');
   if(ms) ms.classList.toggle('show',isStaff);
   if(shown.length) render();
@@ -561,18 +587,16 @@ function updateStaffUI(){
 // ━━━━━━━━━━ CHANGE PASSWORD ━━━━━━━━━━
 function openChangePwd(){ closeLov(); document.getElementById('pov').classList.add('on'); }
 function closePov(){ document.getElementById('pov').classList.remove('on'); }
-
 function changePassword(){
   const old=document.getElementById('pOld').value;
-  const nw=document.getElementById('pNew').value;
-  const cf=document.getElementById('pConf').value;
+  const nw =document.getElementById('pNew').value;
+  const cf =document.getElementById('pConf').value;
   const err=document.getElementById('pberr');
   if(old!==getPass()){ err.textContent='Current password is incorrect.'; return; }
   if(nw.length<4){ err.textContent='New password must be at least 4 characters.'; return; }
   if(nw!==cf){ err.textContent='Passwords do not match.'; return; }
-  localStorage.setItem('sf_pass',nw);
-  closePov();
-  toast('✅ Password changed successfully!','success');
+  localStorage.setItem('sf_pass',nw); closePov();
+  toast('✅ Password changed!','success');
 }
 
 // ━━━━━━━━━━ FETCH ━━━━━━━━━━
@@ -589,18 +613,32 @@ async function fetchData(){
     document.getElementById('foot').textContent='Last synced: '+new Date().toLocaleString('en-AU');
     toast(`✅ ${all.length} products loaded`,'success');
   }catch{
-    document.getElementById('grid').innerHTML=`<div class="state"><span class="ico">⚠️</span><p>Could not load data from Google Sheets</p><small>Check your URL and make sure access is set to "Anyone"</small></div>`;
+    document.getElementById('grid').innerHTML=`<div class="state"><span class="ico">⚠️</span><p>Could not load from Google Sheets</p><small>Check your URL and make sure access is "Anyone"</small></div>`;
     toast('Failed to load data','error');
   }finally{ document.getElementById('syncBtn').classList.remove('spinning'); }
 }
+function syncData(){ if(apiUrl) fetchData(); else toast('Connect a Google Sheet first (⚙)','info'); }
+setInterval(()=>{ if(apiUrl) fetchData(); },300000);
 
-function syncData(){ if(apiUrl) fetchData(); else toast('Connect a Google Sheet first (⚙ Settings)','info'); }
-setInterval(()=>{ if(apiUrl) fetchData(); }, 300000);
-
-// ━━━━━━━━━━ PARSE ━━━━━━━━━━
+// ━━━━━━━━━━ PARSE — detects extra columns automatically ━━━━━━━━━━
 function parse(rows){
+  if(!rows.length) return [];
+
+  // Detect all column keys from the data
+  const allKeys = [...new Set(rows.flatMap(r=>Object.keys(r)))];
+  // Extra = anything not in CORE_COLS
+  extraCols = allKeys.filter(k=>{
+    const kl=k.toLowerCase().replace(/\s+/g,'');
+    return !CORE_COLS.has(kl) && k!=='' && !k.startsWith('_');
+  });
+
   return rows.map((row,i)=>{
-    const g=(...keys)=>{ for(const k of keys){ const f=Object.keys(row).find(rk=>rk.toLowerCase().includes(k)); if(f!==undefined&&row[f]!=='') return String(row[f]); } return ''; };
+    const g=(...keys)=>{ for(const k of keys){ const f=Object.keys(row).find(rk=>rk.toLowerCase().includes(k)); if(f!==undefined&&row[f]!==''&&row[f]!==null) return String(row[f]); } return ''; };
+
+    // Collect extra field values
+    const extra={};
+    extraCols.forEach(col=>{ if(row[col]!==undefined&&row[col]!=='') extra[col]=String(row[col]); });
+
     return {
       id:i, _row:row._row||0,
       name:     g('name','product','item')||`Product ${i+1}`,
@@ -611,6 +649,7 @@ function parse(rows){
       unit:     g('unit')||'pcs',
       variations:(g('variation','var','size','colour','color')||'').split(/[,،|\/]/).map(v=>v.trim()).filter(Boolean),
       image:    g('image','img','photo','picture'),
+      extra,    // ← all dynamic fields live here
     };
   }).filter(p=>p.name);
 }
@@ -619,6 +658,11 @@ function parse(rows){
 const lv=s=>s<=LOW?'low':s<=MID?'mid':'ok';
 const lvL={ok:'In Stock',mid:'Low Stock',low:'Critical'};
 const lvC={ok:'var(--green)',mid:'var(--amber)',low:'var(--red)'};
+
+// Nice label from column key: "supplier_name" → "Supplier Name"
+function prettyLabel(key){
+  return key.replace(/[_-]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
 
 // ━━━━━━━━━━ CATEGORIES ━━━━━━━━━━
 function buildCats(){
@@ -635,8 +679,9 @@ function doFilter(){
   const q=(document.getElementById('hSearch').value||'').toLowerCase().trim();
   shown=all.filter(p=>{
     const l=lv(p.stock);
+    const extraMatch=Object.values(p.extra||{}).some(v=>v.toLowerCase().includes(q));
     return (fCat==='all'||p.category===fCat)&&(fStock==='all'||l===fStock)&&
-           (!q||p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)||p.variations.some(v=>v.toLowerCase().includes(q)));
+           (!q||p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)||p.variations.some(v=>v.toLowerCase().includes(q))||extraMatch);
   });
   shown.sort((a,b)=>sortBy==='name'?a.name.localeCompare(b.name):sortBy==='pl'?a.price-b.price:sortBy==='ph'?b.price-a.price:sortBy==='sl'?a.stock-b.stock:b.stock-a.stock);
   const ri=document.getElementById('ri');
@@ -678,30 +723,55 @@ function updateStats(){
 function openDetail(i){
   currentP=shown[i];
   const p=currentP,l=lv(p.stock),clr=lvC[l],bw=Math.min(p.stock/maxQ*100,100).toFixed(1);
+
+  // Image
   const iw=document.getElementById('mImg');
   iw.innerHTML=`<button class="mclose" onclick="closeOv()">✕</button>`;
   if(p.image){ const im=new Image(); im.src=p.image; im.alt=p.name; iw.appendChild(im); }
   else{ const d=document.createElement('div'); d.className='noimg-lg'; d.textContent='📦'; iw.appendChild(d); }
+
   document.getElementById('mCat').textContent=p.category;
   document.getElementById('mName').textContent=p.name;
   document.getElementById('mSku').textContent=p.code?'SKU: '+p.code:'';
+
+  // Core boxes
   document.getElementById('mGrid').innerHTML=`
     <div class="mbox"><div class="mk">Price</div><div class="mv">${p.price?'$'+p.price.toFixed(2):'—'}</div></div>
     <div class="mbox"><div class="mk">Stock</div><div class="mv ${l}">${p.stock} ${p.unit}</div></div>
     <div class="mbox"><div class="mk">Status</div><div class="mv ${l}">${lvL[l]}</div></div>`;
+
+  // Variations
   const vw=document.getElementById('mVarW');
   if(p.variations.length){ vw.style.display='block'; document.getElementById('mVars').innerHTML=p.variations.map(v=>`<div class="mvar">${v}</div>`).join(''); }
   else vw.style.display='none';
+
+  // ★ DYNAMIC EXTRA FIELDS ★
+  const extraEntries=Object.entries(p.extra||{});
+  const ew=document.getElementById('mExtra');
+  const eg=document.getElementById('mExtraGrid');
+  if(extraEntries.length){
+    ew.style.display='block';
+    eg.innerHTML=extraEntries.map(([k,v])=>`
+      <div class="ef-item">
+        <div class="ef-key">${prettyLabel(k)}</div>
+        <div class="ef-val">${v}</div>
+      </div>`
+    ).join('');
+  } else { ew.style.display='none'; }
+
+  // Stock bar
   document.getElementById('mAvV').textContent=lvL[l]; document.getElementById('mAvV').style.color=clr;
   document.getElementById('mAvF').style.width=bw+'%'; document.getElementById('mAvF').style.background=clr;
   document.getElementById('mAvN').textContent=`${p.stock} ${p.unit} currently in stock`;
+
+  // Staff
   document.getElementById('stockInput').value=p.stock;
   document.getElementById('mAdminSec').classList.toggle('show',isStaff);
+
   document.getElementById('ov').classList.add('on');
   document.body.style.overflow='hidden';
 }
 function closeOv(){ document.getElementById('ov').classList.remove('on'); document.body.style.overflow=''; }
-function maybeCloseOv(e){ if(e.target===document.getElementById('ov')) closeOv(); }
 function editCurrent(){ if(currentP){ closeOv(); openForm(currentP); } }
 function deleteCurrent(){ if(currentP){ closeOv(); confirmDel(shown.indexOf(currentP)); } }
 
@@ -712,7 +782,7 @@ async function quickUpdateStock(){
   if(!apiUrl){
     const p=all.find(x=>x.id===currentP.id); if(p){ p.stock=ns; currentP.stock=ns; }
     maxQ=Math.max(...all.map(x=>x.stock),1); updateStats(); doFilter(); closeOv();
-    toast('Stock updated (demo mode)','success'); return;
+    toast('Stock updated (demo)','success'); return;
   }
   try{
     await apiPost({action:'update_stock',row:currentP._row,stock:ns});
@@ -726,39 +796,76 @@ function openForm(product=null){
   formMode=product?'edit':'add';
   document.getElementById('formTitle').textContent=product?'Edit Product':'Add New Product';
   document.getElementById('fsubTxt').textContent=product?'✓ Save Changes':'✓ Add Product';
+
+  // Core fields
   ['name','category','stock','price','code','unit','variation','image'].forEach(f=>{
-    document.getElementById('f_'+f).value=product?(f==='variation'?(product.variations||[]).join(','):(product[f]||'')):'';
+    const el=document.getElementById('f_'+f);
+    if(el) el.value=product?(f==='variation'?(product.variations||[]).join(','):(product[f]||'')):'';
   });
+
+  // ★ DYNAMIC EXTRA FIELDS in form ★
+  const ew=document.getElementById('fExtraWrap');
+  const eg=document.getElementById('fExtraGrid');
+  if(extraCols.length){
+    ew.style.display='block';
+    eg.innerHTML=extraCols.map(col=>`
+      <div class="ef-form-field">
+        <label>${prettyLabel(col)}</label>
+        <input type="text" id="ef_${col}" placeholder="${prettyLabel(col)}…" value="${product&&product.extra&&product.extra[col]?product.extra[col]:''}"/>
+      </div>`
+    ).join('');
+  } else { ew.style.display='none'; }
+
   if(product) document.getElementById('fov')._ep=product;
   document.getElementById('fov').classList.add('on');
   document.body.style.overflow='hidden';
   setTimeout(()=>document.getElementById('f_name').focus(),200);
 }
 function closeFov(){ document.getElementById('fov').classList.remove('on'); document.body.style.overflow=''; }
-function maybeCloseFov(e){ if(e.target===document.getElementById('fov')) closeFov(); }
 function editIdx(i){ openForm(shown[i]); }
 
 async function submitForm(){
   const name=document.getElementById('f_name').value.trim();
   const stock=document.getElementById('f_stock').value;
   if(!name||stock===''){ toast('Product name and stock are required','error'); return; }
-  const data={name,stock:parseFloat(stock)||0,price:parseFloat(document.getElementById('f_price').value)||0,category:document.getElementById('f_category').value.trim()||'Uncategorised',code:document.getElementById('f_code').value.trim(),unit:document.getElementById('f_unit').value.trim()||'pcs',variation:document.getElementById('f_variation').value.trim(),image:document.getElementById('f_image').value.trim()};
+
+  const data={
+    name, stock:parseFloat(stock)||0,
+    price:parseFloat(document.getElementById('f_price').value)||0,
+    category:document.getElementById('f_category').value.trim()||'Uncategorised',
+    code:document.getElementById('f_code').value.trim(),
+    unit:document.getElementById('f_unit').value.trim()||'pcs',
+    variation:document.getElementById('f_variation').value.trim(),
+    image:document.getElementById('f_image').value.trim(),
+  };
+
+  // Collect extra field values
+  extraCols.forEach(col=>{
+    const el=document.getElementById('ef_'+col);
+    if(el) data[col]=el.value.trim();
+  });
+
   const btn=document.getElementById('fsubBtn'); btn.disabled=true; document.getElementById('fsubTxt').textContent='Saving…';
+
   if(!apiUrl){
+    const variations=(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean);
+    const extra={}; extraCols.forEach(c=>{ if(data[c]) extra[c]=data[c]; });
     if(formMode==='edit'){
       const ep=document.getElementById('fov')._ep;
       const idx=all.findIndex(x=>x.id===ep.id);
-      if(idx!==-1) all[idx]={...all[idx],...data,variations:(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean)};
-    } else { all.push({id:all.length,_row:0,...data,variations:(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean)}); }
+      if(idx!==-1) all[idx]={...all[idx],...data,variations,extra};
+    } else { all.push({id:all.length,_row:0,...data,variations,extra}); }
     maxQ=Math.max(...all.map(p=>p.stock),1); buildCats(); doFilter(); updateStats(); closeFov();
     toast(formMode==='edit'?'✅ Product updated (demo)':'✅ Product added (demo)','success');
-    btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product'; return;
+    btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product';
+    return;
   }
+
   try{
     const ep=document.getElementById('fov')._ep;
     const res=await apiPost(formMode==='edit'?{action:'edit',row:ep._row,data}:{action:'add',data});
     toast(res.message||'Done!','success'); closeFov(); setTimeout(fetchData,700);
-  }catch{ toast('Failed to save product','error'); }
+  }catch{ toast('Failed to save','error'); }
   finally{ btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product'; }
 }
 
@@ -789,36 +896,41 @@ async function apiPost(body){
   return j;
 }
 
+// ━━━━━━━━━━ MODAL CLOSE HELPERS ━━━━━━━━━━
+function maybeClose(id,e){ if(e.target===document.getElementById(id)){ if(id==='ov') closeOv(); else if(id==='fov') closeFov(); else if(id==='lov') closeLov(); } }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeOv(); closeFov(); closeConf(); closeLov(); closePov(); }
+  if(e.key==='Enter'&&document.getElementById('lov').classList.contains('on')) doLogin();
+});
+
 // ━━━━━━━━━━ DEMO ━━━━━━━━━━
 function loadDemo(){
+  // Demo includes extra columns: supplier, barcode, weight, notes
+  extraCols=['supplier','barcode','weight','notes'];
   all=[
-    {id:0,_row:2,name:'Premium Cotton T-Shirt',stock:48,price:29.95,category:'Clothing',code:'TS-001',unit:'pcs',variations:['XS','S','M','L','XL','XXL'],image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80'},
-    {id:1,_row:3,name:'Classic Denim Jeans',stock:7,price:79.95,category:'Clothing',code:'DJ-002',unit:'pcs',variations:['28','30','32','34','36'],image:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80'},
-    {id:2,_row:4,name:'Floral Midi Dress',stock:22,price:59.95,category:'Clothing',code:'DR-003',unit:'pcs',variations:['XS','S','M','L'],image:'https://images.unsplash.com/photo-1594938298603-c8148c4b4571?w=400&q=80'},
-    {id:3,_row:5,name:'Merino Wool Scarf',stock:3,price:49.95,category:'Accessories',code:'SC-004',unit:'pcs',variations:['Navy','Cream','Charcoal'],image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&q=80'},
-    {id:4,_row:6,name:'Leather Sneakers',stock:15,price:129.95,category:'Footwear',code:'SN-005',unit:'pairs',variations:['US6','US7','US8','US9','US10','US11'],image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'},
-    {id:5,_row:7,name:'Canvas Tote Bag',stock:2,price:24.95,category:'Bags',code:'TB-006',unit:'pcs',variations:['Natural','Black','Olive'],image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80'},
-    {id:6,_row:8,name:'Stainless Steel Watch',stock:11,price:199.95,category:'Accessories',code:'WA-007',unit:'pcs',variations:['Silver','Gold','Rose Gold'],image:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80'},
-    {id:7,_row:9,name:'Polarised Sunglasses',stock:34,price:39.95,category:'Accessories',code:'SG-008',unit:'pcs',variations:['Black','Tortoise','Blue'],image:'https://images.unsplash.com/photo-1509695507497-903c140c43b0?w=400&q=80'},
-    {id:8,_row:10,name:'Linen Shirt',stock:0,price:69.95,category:'Clothing',code:'LN-009',unit:'pcs',variations:['S','M','L','XL'],image:'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&q=80'},
+    {id:0,_row:2,name:'Premium Cotton T-Shirt',stock:48,price:29.95,category:'Clothing',code:'TS-001',unit:'pcs',variations:['XS','S','M','L','XL','XXL'],image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80',extra:{supplier:'AUS Textiles Pty',barcode:'9312456001234',weight:'180g',notes:'Best seller — reorder at 20 units'}},
+    {id:1,_row:3,name:'Classic Denim Jeans',stock:7,price:79.95,category:'Clothing',code:'DJ-002',unit:'pcs',variations:['28','30','32','34','36'],image:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80',extra:{supplier:'DenimCo Melbourne',barcode:'9312456002345',weight:'620g',notes:'Low stock — reorder ASAP'}},
+    {id:2,_row:4,name:'Floral Midi Dress',stock:22,price:59.95,category:'Clothing',code:'DR-003',unit:'pcs',variations:['XS','S','M','L'],image:'https://images.unsplash.com/photo-1594938298603-c8148c4b4571?w=400&q=80',extra:{supplier:'AUS Textiles Pty',barcode:'9312456003456',weight:'290g',notes:'Summer collection 2025'}},
+    {id:3,_row:5,name:'Merino Wool Scarf',stock:3,price:49.95,category:'Accessories',code:'SC-004',unit:'pcs',variations:['Navy','Cream','Charcoal'],image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&q=80',extra:{supplier:'Wool & Co Sydney',barcode:'9312456004567',weight:'140g',notes:'Winter item — clearance pricing'}},
+    {id:4,_row:6,name:'Leather Sneakers',stock:15,price:129.95,category:'Footwear',code:'SN-005',unit:'pairs',variations:['US6','US7','US8','US9','US10','US11'],image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',extra:{supplier:'FootCraft Brisbane',barcode:'9312456005678',weight:'800g',notes:'Premium grade leather'}},
+    {id:5,_row:7,name:'Canvas Tote Bag',stock:2,price:24.95,category:'Bags',code:'TB-006',unit:'pcs',variations:['Natural','Black','Olive'],image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80',extra:{supplier:'EcoBags Perth',barcode:'9312456006789',weight:'220g',notes:'Eco-friendly — popular gift item'}},
+    {id:6,_row:8,name:'Stainless Steel Watch',stock:11,price:199.95,category:'Accessories',code:'WA-007',unit:'pcs',variations:['Silver','Gold','Rose Gold'],image:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80',extra:{supplier:'TimeZone Imports',barcode:'9312456007890',weight:'95g',notes:'Water resistant 30m'}},
+    {id:7,_row:9,name:'Polarised Sunglasses',stock:34,price:39.95,category:'Accessories',code:'SG-008',unit:'pcs',variations:['Black','Tortoise','Blue'],image:'https://images.unsplash.com/photo-1509695507497-903c140c43b0?w=400&q=80',extra:{supplier:'SunStyle Adelaide',barcode:'9312456008901',weight:'28g',notes:'UV400 protection'}},
+    {id:8,_row:10,name:'Linen Shirt',stock:0,price:69.95,category:'Clothing',code:'LN-009',unit:'pcs',variations:['S','M','L','XL'],image:'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&q=80',extra:{supplier:'AUS Textiles Pty',barcode:'9312456009012',weight:'240g',notes:'Out of stock — next shipment Dec 2025'}},
   ];
   maxQ=Math.max(...all.map(p=>p.stock),1);
   document.getElementById('drawer').classList.remove('open');
   document.getElementById('ldot').style.display='block';
   buildCats(); doFilter(); updateStats();
-  toast('Demo loaded — try Staff Login to manage products','success');
+  toast('Demo loaded — click any product to see dynamic extra fields!','success');
 }
 
-// ━━━━━━━━━━ TOAST + KEYS ━━━━━━━━━━
+// ━━━━━━━━━━ TOAST ━━━━━━━━━━
 function toast(msg,type='info'){
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type+' on';
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3200);
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3500);
 }
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){ closeOv(); closeFov(); closeConf(); closeLov(); closePov(); }
-  if(e.key==='Enter'&&document.getElementById('lov').classList.contains('on')) doLogin();
-});
 </script>
 </body>
 </html>
