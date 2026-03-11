@@ -1,824 +1,1375 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stockflow — Inventory Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink:     #0f1117;
-  --bg:      #f6f7f9;
-  --surface: #ffffff;
-  --paper:   #f0f2f5;
-  --sand:    #e4e7ed;
-  --blue:    #2563eb;
-  --blue-l:  #eff4ff;
-  --green:   #059669;
-  --green-l: #ecfdf5;
-  --amber:   #d97706;
-  --amber-l: #fffbeb;
-  --red:     #dc2626;
-  --red-l:   #fef2f2;
-  --purple:  #7c3aed;
-  --purple-l:#f5f3ff;
-  --muted:   #6b7280;
-  --border:  #e5e7eb;
-  --sh:  0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.07);
-  --shl: 0 8px 40px rgba(0,0,0,.13);
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockView Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0e1520;
+      --surface2: #141e2d;
+      --surface3: #1a2539;
+      --border: #1f2e45;
+      --border2: #243354;
+      --accent: #00d4ff;
+      --accent2: #0099cc;
+      --accent3: #00ffaa;
+      --accent4: #ff6b35;
+      --text: #e8f0fe;
+      --text2: #8ba3c7;
+      --text3: #4a6285;
+      --green: #00e676;
+      --yellow: #ffd740;
+      --red: #ff5252;
+    }
 
-/* ── HEADER ── */
-header{background:var(--ink);position:sticky;top:0;z-index:300;box-shadow:0 1px 0 rgba(255,255,255,.06)}
-.hi{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:16px;height:60px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:white;flex-shrink:0}
-.bmark{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.bname{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.3px}
-.bsub{font-size:9px;opacity:.4;letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
-.hs{flex:1;max-width:480px;margin:0 auto;position:relative}
-.hs input{width:100%;padding:9px 14px 9px 38px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.11);border-radius:8px;color:white;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s}
-.hs input::placeholder{color:rgba(255,255,255,.3)}
-.hs input:focus{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}
-.hs svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4}
-.hbtns{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
-.hbtn{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid rgba(255,255,255,.16);border-radius:7px;background:transparent;color:rgba(255,255,255,.72);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;white-space:nowrap}
-.hbtn:hover{background:rgba(255,255,255,.1);color:white}
-.hbtn.primary{background:var(--blue);border-color:var(--blue);color:white}
-.hbtn.primary:hover{opacity:.88}
-.hbtn.success{background:var(--green);border-color:var(--green);color:white}
-.hbtn.success:hover{opacity:.88}
-.hbtn.ghost{border-color:rgba(255,255,255,.22)}
-/* staff bar */
-.staff-bar{background:linear-gradient(90deg,#1d4ed8,#7c3aed);padding:7px 24px;display:none;align-items:center;justify-content:center;gap:10px;font-size:12px;color:white;font-weight:500}
-.staff-bar.show{display:flex}
-.staff-bar .sb-badge{background:rgba(255,255,255,.2);padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px}
-.spin{display:inline-block}.spinning .spin{animation:rot 1s linear infinite}
-@keyframes rot{to{transform:rotate(360deg)}}
-.ldot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 6px #34d399;animation:pd 2s ease infinite}
-@keyframes pd{0%,100%{opacity:1}50%{opacity:.3}}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
 
-/* ── SETUP DRAWER ── */
-.drawer{background:#1a1d27;border-bottom:1px solid rgba(255,255,255,.07);overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
-.drawer.open{max-height:360px}
-.dri{max-width:900px;margin:0 auto;padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
-.dri h3{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
-.urow{display:flex;gap:8px}
-.ui{flex:1;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;color:white;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:.2s}
-.ui:focus{border-color:var(--blue)}
-.ui::placeholder{color:rgba(255,255,255,.22)}
-.cbtn{padding:10px 18px;background:var(--blue);border:none;border-radius:7px;color:white;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s}
-.cbtn:hover{opacity:.85}
-.schema{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:12px 14px}
-.sr{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
-.sr:last-child{border:none}
-.sc{font-family:'Courier New',monospace;color:#60a5fa;font-size:11px;min-width:86px}
-.sd{color:rgba(255,255,255,.36)}
-.srq{margin-left:auto;font-size:10px;color:rgba(255,255,255,.2)}
-.dcta{margin-top:12px;font-size:12px;color:rgba(255,255,255,.28);cursor:pointer;transition:.2s}
-.dcta:hover{color:rgba(255,255,255,.6)}
-.dcta span{text-decoration:underline}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden
+    }
 
-/* ── MAIN ── */
-.main{max-width:1320px;margin:0 auto;padding:24px}
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(0, 212, 255, .06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift1 20s ease-in-out infinite alternate
+    }
 
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
-.sc2{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
-.sc2::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
-.sc2.sa::after{background:var(--ink)}.sc2.sg::after{background:var(--green)}.sc2.sw::after{background:var(--amber)}.sc2.sr2::after{background:var(--red)}
-.si{font-size:22px;flex-shrink:0}
-.sn{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1}
-.sc2.sg .sn{color:var(--green)}.sc2.sw .sn{color:var(--amber)}.sc2.sr2 .sn{color:var(--red)}
-.sl{font-size:11px;color:var(--muted);margin-top:3px}
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(0, 255, 170, .04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift2 25s ease-in-out infinite alternate
+    }
 
-/* categories */
-.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.tag{padding:6px 15px;border:1.5px solid var(--border);background:var(--surface);border-radius:20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:.18s}
-.tag:hover{border-color:var(--ink);color:var(--ink)}
-.tag.active{background:var(--ink);color:white;border-color:var(--ink)}
+    @keyframes drift1 {
+      to {
+        transform: translate(100px, 100px)
+      }
+    }
 
-/* toolbar */
-.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.stags{display:flex;gap:6px}
-.stag{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:.18s}
-.stag:hover{border-color:var(--ink);color:var(--ink)}
-.stag.active{background:var(--ink);color:white;border-color:var(--ink)}
-.stag.ok.active{background:var(--green);border-color:var(--green)}
-.stag.mid.active{background:var(--amber);border-color:var(--amber)}
-.stag.low.active{background:var(--red);border-color:var(--red)}
-.ssel{margin-left:auto;padding:7px 12px;border:1.5px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;outline:none;font-weight:500}
-.ri{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.rb{background:var(--ink);color:white;padding:2px 12px;border-radius:10px;font-size:12px;font-weight:600}
+    @keyframes drift2 {
+      to {
+        transform: translate(-100px, -80px)
+      }
+    }
 
-/* ── GRID ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s,border-color .22s;animation:fup .25s ease both;box-shadow:var(--sh)}
-.card:hover{transform:translateY(-3px);box-shadow:var(--shl);border-color:rgba(37,99,235,.4)}
-@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.cimg{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--paper);position:relative}
-.cimg img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
-.card:hover .cimg img{transform:scale(1.05)}
-.noimg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--sand)}
-.ibadge{position:absolute;top:8px;right:8px;padding:3px 10px;border-radius:17px;font-size:10px;font-weight:700;letter-spacing:.3px}
-.ibadge.ok{background:rgba(5,150,105,.9);color:white}
-.ibadge.mid{background:rgba(217,119,6,.9);color:white}
-.ibadge.low{background:rgba(220,38,38,.9);color:white}
-.cadmin{position:absolute;inset:0;background:rgba(15,17,23,.5);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;gap:8px}
-.cadmin.show{display:flex}
-.cact{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;transition:.15s;display:flex;align-items:center;gap:5px}
-.cact.edit{background:white;color:var(--ink)}.cact.edit:hover{background:var(--blue-l);color:var(--blue)}
-.cact.del{background:var(--red);color:white}.cact.del:hover{opacity:.88}
-.cbody{padding:14px}
-.ccat{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:4px}
-.cname{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;line-height:1.35;margin-bottom:3px}
-.csku{font-size:10px;color:var(--muted);font-family:'Courier New',monospace;margin-bottom:8px}
-.vpills{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
-.vp{padding:2px 7px;border-radius:4px;border:1px solid var(--sand);background:var(--paper);font-size:10px;color:var(--muted);font-weight:500}
-.cfoot{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--paper)}
-.cprice{font-family:'Syne',sans-serif;font-size:17px;font-weight:800}
-.cstk{font-size:12px;color:var(--muted)}
-.cstk strong{color:var(--ink);font-weight:600}
-.sbar{height:3px;background:var(--paper);border-radius:2px;margin-top:9px;overflow:hidden}
-.sbf{height:100%;border-radius:2px;transition:width .5s}
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      position: relative;
+      background: rgba(8, 12, 20, .92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px
+    }
 
-/* ── STATES ── */
-.state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted)}
-.state .ico{font-size:50px;margin-bottom:14px;opacity:.35;display:block}
-.state p{font-size:16px;font-weight:500}
-.state small{font-size:13px;display:block;margin-top:6px;opacity:.7}
-.ldr{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
-.ldr span{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:ld 1.2s ease infinite}
-.ldr span:nth-child(2){animation-delay:.2s}.ldr span:nth-child(3){animation-delay:.4s}
-@keyframes ld{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+    .header-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      height: 68px
+    }
 
-/* ── LOGIN MODAL ── */
-.lov{position:fixed;inset:0;background:rgba(15,17,23,.7);backdrop-filter:blur(10px);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
-.lov.on{opacity:1;pointer-events:all}
-.lbox{background:white;border-radius:20px;width:100%;max-width:380px;padding:38px 34px;box-shadow:var(--shl);transform:scale(.95) translateY(10px);transition:transform .28s cubic-bezier(.34,1.4,.64,1);text-align:center}
-.lov.on .lbox{transform:scale(1) translateY(0)}
-.lbox-icon{width:56px;height:56px;background:var(--blue-l);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px}
-.lbox h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}
-.lbox p{font-size:13px;color:var(--muted);margin-bottom:26px;line-height:1.5}
-.lfield{position:relative;margin-bottom:12px;text-align:left}
-.lfield label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
-.lfield input{width:100%;padding:12px 42px 12px 14px;border:1.5px solid var(--border);border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s;letter-spacing:1px}
-.lfield input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.leye{position:absolute;right:12px;bottom:12px;cursor:pointer;opacity:.4;font-size:16px;background:none;border:none;padding:0;transition:.2s}
-.leye:hover{opacity:.8}
-.lerr{font-size:12px;color:var(--red);margin-bottom:12px;min-height:16px;text-align:left;font-weight:500}
-.lbtn{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
-.lbtn:hover{opacity:.88}
-.lbtn:active{transform:scale(.98)}
-.lcancel{margin-top:12px;font-size:13px;color:var(--muted);cursor:pointer;font-weight:500}
-.lcancel:hover{color:var(--ink)}
-.lpwdlink{margin-top:16px;font-size:12px;color:var(--muted)}
-.lpwdlink span{text-decoration:underline;cursor:pointer;color:var(--blue)}
-.lpwdlink span:hover{opacity:.8}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      text-decoration: none
+    }
 
-/* ── DETAIL MODAL ── */
-.ov{position:fixed;inset:0;background:rgba(15,17,23,.55);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
-.ov.on{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shl);transform:scale(.96) translateY(8px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
-.ov.on .modal{transform:scale(1) translateY(0)}
-.mimg{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--paper);position:relative;border-radius:18px 18px 0 0}
-.mimg img{width:100%;height:100%;object-fit:cover}
-.mimg .noimg-lg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;color:var(--sand)}
-.mclose{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(15,17,23,.5);backdrop-filter:blur(4px);border:none;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
-.mclose:hover{background:var(--red)}
-.mbody{padding:22px 24px 26px}
-.mcat{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--muted);font-weight:600;margin-bottom:5px}
-.mname{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1.25;margin-bottom:3px}
-.msku{font-size:12px;color:var(--muted);font-family:'Courier New',monospace;margin-bottom:18px}
-.mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
-.mbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 13px}
-.mbox .mk{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:4px}
-.mbox .mv{font-family:'Syne',sans-serif;font-size:19px;font-weight:800}
-.mv.ok{color:var(--green)}.mv.mid{color:var(--amber)}.mv.low{color:var(--red)}
-.msect{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;color:var(--muted);margin-bottom:8px}
-.mvars{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-.mvar{padding:6px 14px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-weight:600}
-.avwrap{background:var(--bg);border-radius:11px;padding:14px}
-.avtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
-.avlbl{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.avv{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
-.avbar{height:6px;background:var(--sand);border-radius:3px;overflow:hidden}
-.avf{height:100%;border-radius:3px;transition:width .6s}
-.avnote{font-size:11px;color:var(--muted);margin-top:5px}
-/* staff controls in modal */
-.madmin{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:none}
-.madmin.show{display:block}
-.madmin-hd{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blue);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.stock-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--bg);padding:11px 13px;border-radius:9px}
-.stock-row label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
-.stock-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;outline:none;text-align:center;transition:.2s;max-width:100px}
-.stock-row input:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(5,150,105,.1)}
-.supd{padding:8px 16px;background:var(--green);color:white;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity .2s}
-.supd:hover{opacity:.85}
-.macts{display:flex;gap:8px}
-.mabtn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:5px}
-.mabtn:hover{border-color:var(--ink);background:var(--bg)}
-.mabtn.danger{color:var(--red);border-color:rgba(220,38,38,.3)}
-.mabtn.danger:hover{background:var(--red-l);border-color:var(--red)}
-.mabtn.primary{background:var(--blue);color:white;border-color:var(--blue)}
-.mabtn.primary:hover{opacity:.88}
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: -.5px;
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 212, 255, .3);
+      font-family: 'Poppins', sans-serif
+    }
 
-/* ── FORM MODAL ── */
-.fov{position:fixed;inset:0;background:rgba(15,17,23,.65);backdrop-filter:blur(7px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
-.fov.on{opacity:1;pointer-events:all}
-.fmod{background:var(--surface);border-radius:18px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:var(--shl);transform:translateY(14px);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
-.fov.on .fmod{transform:translateY(0)}
-.fhead{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.fhead h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
-.fclose{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.2s}
-.fclose:hover{background:var(--red);color:white;border-color:var(--red)}
-.fbody{padding:20px 24px 24px}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.fg.full{grid-template-columns:1fr}
-.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
-.field label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
-.field input,.field select{padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:.2s;background:var(--surface);width:100%}
-.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08);background:var(--blue-l)}
-.field .hint{font-size:11px;color:var(--muted)}
-.req{color:var(--red)}
-.fsub{width:100%;padding:13px;background:var(--blue);color:white;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.fsub:hover{opacity:.88}
-.fsub:disabled{opacity:.5;cursor:not-allowed}
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -.5px
+    }
 
-/* ── CONFIRM ── */
-.conf{position:fixed;inset:0;background:rgba(15,17,23,.65);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
-.conf.on{opacity:1;pointer-events:all}
-.cbox{background:var(--surface);border-radius:16px;padding:28px 26px;max-width:340px;width:100%;text-align:center;box-shadow:var(--shl);transform:scale(.94);transition:transform .2s}
-.conf.on .cbox{transform:scale(1)}
-.cbox-icon{font-size:36px;margin-bottom:12px}
-.cbox h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:7px}
-.cbox p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
-.cbrow{display:flex;gap:8px}
-.cbrow button{flex:1;padding:11px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;border:1.5px solid var(--border)}
-.cno{background:var(--surface);color:var(--ink)}.cno:hover{background:var(--bg)}
-.cyes{background:var(--red);color:white;border-color:var(--red)}.cyes:hover{opacity:.85}
+    .search-wrap {
+      flex: 1;
+      max-width: 560px;
+      position: relative
+    }
 
-/* ── CHANGE PASSWORD ── */
-.pov{position:fixed;inset:0;background:rgba(15,17,23,.7);backdrop-filter:blur(10px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
-.pov.on{opacity:1;pointer-events:all}
-.pbox{background:var(--surface);border-radius:18px;width:100%;max-width:380px;padding:32px 28px;box-shadow:var(--shl);transform:scale(.95);transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
-.pov.on .pbox{transform:scale(1)}
-.pbox h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px}
-.pbox p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
-.pbf{margin-bottom:14px}
-.pbf label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
-.pbf input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s}
-.pbf input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
-.pberr{font-size:12px;color:var(--red);min-height:16px;margin-bottom:10px;font-weight:500}
-.pbsub{width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
-.pbsub:hover{opacity:.88}
-.pbcancel{width:100%;margin-top:8px;padding:10px;background:var(--surface);color:var(--muted);border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:.2s}
-.pbcancel:hover{border-color:var(--ink);color:var(--ink)}
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text3);
+      font-size: 15px;
+      pointer-events: none
+    }
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);padding:11px 22px;border-radius:24px;font-size:13px;z-index:9999;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.3,.64,1);white-space:nowrap;font-family:'Inter',sans-serif;color:white;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.18)}
-.toast.on{transform:translateX(-50%) translateY(0)}
-.toast.success{background:#059669}.toast.error{background:#dc2626}.toast.info{background:var(--ink)}
+    #searchInput {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 40px 10px 42px;
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s
+    }
 
-.foot{text-align:center;padding:24px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);margin-top:36px}
+    #searchInput::placeholder {
+      color: var(--text3)
+    }
 
-@media(max-width:960px){.stats{grid-template-columns:1fr 1fr}.mgrid{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.grid{grid-template-columns:1fr 1fr;gap:10px}.hs{display:none}.dri{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr;gap:10px}.main{padding:14px}.fg{grid-template-columns:1fr}.hbtn span{display:none}}
-@media(max-width:400px){.grid{grid-template-columns:1fr}}
-</style>
+    #searchInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, .1);
+      background: var(--surface3)
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 15px;
+      display: none;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color .2s;
+      align-items: center
+    }
+
+    .search-clear:hover {
+      color: var(--text)
+    }
+
+    .search-clear.vis {
+      display: flex
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      white-space: nowrap
+    }
+
+    .stat-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent3);
+      animation: pulse 2s ease-in-out infinite
+    }
+
+    .stat-dot.offline {
+      background: var(--red)
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .6;
+        transform: scale(.8)
+      }
+    }
+
+    .refresh-btn {
+      width: 34px;
+      height: 34px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0
+    }
+
+    .refresh-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .refresh-btn.spinning svg,
+    .refresh-btn.spinning .spin-icon {
+      animation: spin .8s linear infinite
+    }
+
+    .refresh-btn.spinning {
+      animation: none
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    /* ── Filters ── */
+    .filter-section {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px 32px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .filter-label {
+      font-size: 11px;
+      color: var(--text3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .chip {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      transition: all .2s
+    }
+
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .chip.active {
+      background: rgba(0, 212, 255, .1);
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .results-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text3)
+    }
+
+    .results-count span {
+      color: var(--accent);
+      font-weight: 600
+    }
+
+    /* ── Grid ── */
+    .grid-section {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 32px 60px;
+      position: relative;
+      z-index: 1
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px
+    }
+
+    /* ── Card ── */
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      animation: cardIn .4s ease both;
+      position: relative
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(.97)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4), 0 0 0 1px rgba(0, 212, 255, .1)
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity .3s
+    }
+
+    .product-card:hover::before {
+      opacity: 1
+    }
+
+    .card-header {
+      padding: 16px 16px 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px
+    }
+
+    .card-image {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      overflow: hidden
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .card-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .card-sku {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 3px
+    }
+
+    .card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 5px
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .color-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text2);
+      font-weight: 500
+    }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, .2)
+    }
+
+    .model-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 20px;
+      color: var(--text3);
+      border: 1px solid var(--border)
+    }
+
+    .card-body {
+      padding: 0 16px 16px
+    }
+
+    .stock-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border)
+    }
+
+    .stock-label {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .stock-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 5px;
+      width: 80px
+    }
+
+    .stock-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width .8s ease
+    }
+
+    .stock-value {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1
+    }
+
+    .sh {
+      color: var(--green)
+    }
+
+    .sm {
+      color: var(--yellow)
+    }
+
+    .sl {
+      color: var(--red)
+    }
+
+    .sz {
+      color: var(--text3)
+    }
+
+    .deliveries-preview {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .delivery-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 8px;
+      min-width: 54px
+    }
+
+    .delivery-month {
+      font-size: 9px;
+      color: var(--text3);
+      font-weight: 600;
+      text-transform: uppercase
+    }
+
+    .delivery-qty {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent3);
+      margin-top: 2px
+    }
+
+    .no-delivery {
+      font-size: 11px;
+      color: var(--text3);
+      font-style: italic
+    }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      animation: shimmer 1.5s infinite
+    }
+
+    @keyframes shimmer {
+      0% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+
+      100% {
+        opacity: 1
+      }
+    }
+
+    .skel-line {
+      background: var(--surface3);
+      border-radius: 6px;
+      margin-bottom: 10px
+    }
+
+    /* ── Empty ── */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--text3)
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 8px
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(0, 212, 255, .1);
+      transform: scale(.93) translateY(20px);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .3s;
+      opacity: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border2) transparent
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1) translateY(0);
+      opacity: 1
+    }
+
+    .modal-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 10;
+      border-radius: 20px 20px 0 0
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s
+    }
+
+    .modal-close:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .modal-sku {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    .modal-name {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.3;
+      padding-right: 40px;
+      margin-bottom: 10px
+    }
+
+    .modal-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .tag-model {
+      background: rgba(0, 212, 255, .08);
+      border-color: rgba(0, 212, 255, .3);
+      color: var(--accent)
+    }
+
+    .tag-color {
+      background: rgba(255, 255, 255, .05);
+      border-color: var(--border2);
+      color: var(--text2)
+    }
+
+    .tag-mfr {
+      background: rgba(0, 255, 170, .06);
+      border-color: rgba(0, 255, 170, .25);
+      color: var(--accent3)
+    }
+
+    .modal-body {
+      padding: 20px 24px 24px
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .info-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px
+    }
+
+    .info-card-label {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 6px
+    }
+
+    .info-card-value {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1
+    }
+
+    .info-card-sub {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 4px
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .deliveries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    .delivery-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      text-align: center;
+      transition: border-color .2s, transform .2s;
+      animation: fadeUp .4s ease both
+    }
+
+    .delivery-card:hover {
+      border-color: var(--accent3);
+      transform: translateY(-2px)
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .delivery-card-month {
+      font-size: 10px;
+      color: var(--text3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 4px
+    }
+
+    .delivery-card-qty {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent3)
+    }
+
+    .details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 20px
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .detail-row:last-child {
+      border-bottom: none
+    }
+
+    .detail-key {
+      font-size: 11px;
+      color: var(--text3);
+      font-weight: 600;
+      min-width: 110px;
+      flex-shrink: 0;
+      padding-top: 1px
+    }
+
+    .detail-val {
+      font-size: 12px;
+      color: var(--text2);
+      word-break: break-all;
+      flex: 1
+    }
+
+    .detail-val a {
+      color: var(--accent);
+      text-decoration: none
+    }
+
+    .detail-val a:hover {
+      text-decoration: underline
+    }
+
+    .notes-box {
+      background: rgba(255, 215, 64, .06);
+      border: 1px solid rgba(255, 215, 64, .2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6
+    }
+
+    /* ── Last updated bar ── */
+    .last-updated {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 32px 6px;
+      font-size: 11px;
+      color: var(--text3);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    @media(max-width:768px) {
+      header {
+        padding: 0 16px
+      }
+
+      .header-right .stat-pill {
+        display: none
+      }
+
+      .api-banner,
+      .filter-section,
+      .grid-section,
+      .last-updated {
+        padding-left: 16px;
+        padding-right: 16px
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr
+      }
+
+      .modal {
+        border-radius: 16px
+      }
+
+      .logo-text {
+        display: none
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="hi">
-    <a class="brand" href="#"><div class="bmark">📦</div><div><div class="bname">Stockflow</div><div class="bsub">Inventory</div></div></a>
-    <div class="hs"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="hSearch" placeholder="Search products, SKU, category…" oninput="doFilter()"/></div>
-    <div class="hbtns">
-      <div id="ldot" class="ldot" style="display:none" title="Connected"></div>
-      <button class="hbtn" id="syncBtn" onclick="syncData()"><span class="spin">↻</span> <span>Refresh</span></button>
-      <button class="hbtn success" id="addBtn" onclick="openForm()" style="display:none">＋ <span>Add Product</span></button>
-      <button class="hbtn primary" id="loginBtn" onclick="openLogin()">🔒 <span>Staff Login</span></button>
-      <button class="hbtn ghost" id="logoutBtn" onclick="doLogout()" style="display:none">🔓 <span>Logout</span></button>
-      <button class="hbtn" id="stBtn" onclick="toggleSetup()" title="Settings">⚙</button>
-    </div>
-  </div>
-</header>
-
-<!-- STAFF BAR -->
-<div class="staff-bar" id="staffBar">
-  <span class="sb-badge">STAFF MODE</span>
-  You're logged in as staff — you can add, edit, delete and update stock
-</div>
-
-<!-- SETUP DRAWER -->
-<div class="drawer" id="drawer">
-  <div class="dri">
-    <div>
-      <h3>Connect Google Sheets</h3>
-      <div class="urow"><input class="ui" id="apiIn" type="text" placeholder="https://script.google.com/macros/s/…/exec"/><button class="cbtn" onclick="connectSheet()">Connect</button></div>
-      <div style="margin-top:14px">
-        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;font-weight:600">Staff Password</div>
-        <div class="urow"><input class="ui" id="pwdSetInput" type="password" placeholder="Set staff password…"/><button class="cbtn" onclick="savePassword()" style="background:#7c3aed">Save</button></div>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">SH</div>
+        <span class="logo-text">Sit Healthier</span>
       </div>
-      <div class="dcta" onclick="loadDemo()">or <span>load demo data</span> →</div>
-    </div>
-    <div>
-      <h3>Sheet Column Names</h3>
-      <div class="schema">
-        <div class="sr"><span class="sc">name</span><span class="sd">Product name</span><span class="srq">⚠ required</span></div>
-        <div class="sr"><span class="sc">stock</span><span class="sd">Stock quantity</span><span class="srq">⚠ required</span></div>
-        <div class="sr"><span class="sc">price</span><span class="sd">Price ($)</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">category</span><span class="sd">Category</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">variation</span><span class="sd">S,M,L or Red,Blue</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">code</span><span class="sd">SKU / Product code</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">unit</span><span class="sd">pcs / kg / pair</span><span class="srq">optional</span></div>
-        <div class="sr"><span class="sc">image</span><span class="sd">Image URL</span><span class="srq">optional</span></div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search SKU, product name, color, model…" autocomplete="off">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-  <div class="stats">
-    <div class="sc2 sa"><div class="si">📦</div><div><div class="sn" id="sTotal">0</div><div class="sl">Total Products</div></div></div>
-    <div class="sc2 sg"><div class="si">✅</div><div><div class="sn" id="sOk">0</div><div class="sl">In Stock</div></div></div>
-    <div class="sc2 sw"><div class="si">⚠️</div><div><div class="sn" id="sMid">0</div><div class="sl">Low Warning</div></div></div>
-    <div class="sc2 sr2"><div class="si">🚨</div><div><div class="sn" id="sLow">0</div><div class="sl">Critical Stock</div></div></div>
-  </div>
-  <div class="cats" id="catStrip"></div>
-  <div class="bar">
-    <div class="stags">
-      <div class="stag active" onclick="setSF('all',this)">All</div>
-      <div class="stag ok"  onclick="setSF('ok',this)">✓ In Stock</div>
-      <div class="stag mid" onclick="setSF('mid',this)">⚠ Low</div>
-      <div class="stag low" onclick="setSF('low',this)">🚨 Critical</div>
-    </div>
-    <select class="ssel" onchange="sortBy=this.value;doFilter()">
-      <option value="name">Sort: Name A–Z</option>
-      <option value="pl">Price: Low → High</option>
-      <option value="ph">Price: High → Low</option>
-      <option value="sl">Stock: Low → High</option>
-      <option value="sh">Stock: High → Low</option>
-    </select>
-  </div>
-  <div class="ri" id="ri" style="display:none"></div>
-  <div class="grid" id="grid">
-    <div class="state"><p>Connect your Google Sheet or load demo</p><small>Click ⚙ Settings to get started</small></div>
-  </div>
-  <div class="foot" id="foot"></div>
-</div>
-
-<!-- LOGIN MODAL -->
-<div class="lov" id="lov" onclick="maybeCloseLov(event)">
-  <div class="lbox">
-    <div class="lbox-icon">🔐</div>
-    <h2>Staff Login</h2>
-    <p>Enter the staff password to manage inventory</p>
-    <div class="lfield">
-      <label>Password</label>
-      <input type="password" id="pwdInput" placeholder="Enter password…" onkeydown="if(event.key==='Enter')doLogin()"/>
-      <button class="leye" onclick="togglePwd()">👁</button>
-    </div>
-    <div class="lerr" id="lerr"></div>
-    <button class="lbtn" onclick="doLogin()">Login</button>
-    <div class="lcancel" onclick="closeLov()">Cancel</div>
-    <div class="lpwdlink">Forgot password? <span onclick="openChangePwd()">Reset it here</span></div>
-  </div>
-</div>
-
-<!-- DETAIL MODAL -->
-<div class="ov" id="ov" onclick="maybeCloseOv(event)">
-  <div class="modal">
-    <div class="mimg" id="mImg"><button class="mclose" onclick="closeOv()">✕</button></div>
-    <div class="mbody">
-      <div class="mcat"  id="mCat"></div>
-      <div class="mname" id="mName"></div>
-      <div class="msku"  id="mSku"></div>
-      <div class="mgrid" id="mGrid"></div>
-      <div id="mVarW" style="display:none;margin-bottom:16px"><div class="msect">Variations</div><div class="mvars" id="mVars"></div></div>
-      <div class="avwrap">
-        <div class="avtop"><span class="avlbl">Stock Level</span><span class="avv" id="mAvV"></span></div>
-        <div class="avbar"><div class="avf" id="mAvF"></div></div>
-        <div class="avnote" id="mAvN"></div>
-      </div>
-      <div class="madmin" id="mAdminSec">
-        <div class="madmin-hd">⚡ Staff Controls</div>
-        <div class="stock-row">
-          <label>Update stock:</label>
-          <input type="number" id="stockInput" min="0" value="0"/>
-          <button class="supd" onclick="quickUpdateStock()">Update</button>
+      <div class="header-right">
+        <div class="stat-pill">
+          <div class="stat-dot" id="statDot"></div><span id="totalCount">—</span> Products
         </div>
-        <div class="macts">
-          <button class="mabtn primary" onclick="editCurrent()">✏️ Edit</button>
-          <button class="mabtn danger"  onclick="deleteCurrent()">🗑 Delete</button>
+        <button class="btn btn-outline btn-sm" id="apiConnectBtn" onclick="toggleApiPanel()"
+          title="Connect Google Sheets API" style="padding:6px 12px;font-size:11px;border-radius:8px">⚡ API</button>
+        <button class="refresh-btn" id="refreshBtn" onclick="loadData(true)" title="Refresh data"><span
+            class="spin-icon" style="display:inline-block;font-size:16px;line-height:1">↻</span></button>
+      </div>
+      <!-- Slide-down API panel -->
+      <div id="apiPanel"
+        style="display:none;position:absolute;top:68px;right:32px;z-index:200;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:18px 20px;width:480px;box-shadow:0 16px 48px rgba(0,0,0,.5);animation:fadeUp .25s ease">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div class="api-dot loading" id="apiDot" style="width:8px;height:8px;border-radius:50%"></div>
+          <span id="apiStatusText" style="font-size:12px;font-weight:600;color:var(--text2)">Not connected</span>
+          <button onclick="toggleApiPanel()"
+            style="margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1">✕</button>
         </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input type="text" id="apiUrlInput" placeholder="Paste Apps Script Web App URL…" autocomplete="off"
+            style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Poppins',sans-serif;font-size:12px;outline:none">
+          <button class="btn btn-accent btn-sm" onclick="saveApiUrl()">Connect</button>
+        </div>
+
       </div>
     </div>
-  </div>
-</div>
+  </header>
 
-<!-- FORM MODAL -->
-<div class="fov" id="fov" onclick="maybeCloseFov(event)">
-  <div class="fmod">
-    <div class="fhead"><h2 id="formTitle">Add New Product</h2><button class="fclose" onclick="closeFov()">✕</button></div>
-    <div class="fbody">
-      <div class="fg">
-        <div class="field"><label>Product Name <span class="req">*</span></label><input id="f_name" type="text" placeholder="e.g. Cotton T-Shirt"/></div>
-        <div class="field"><label>Category</label><input id="f_category" type="text" placeholder="e.g. Clothing"/></div>
+  <div class="filter-section">
+    <span class="filter-label">Filter</span>
+    <div class="filter-chips" id="filterChips">
+      <div class="chip active" data-filter="all" onclick="setFilter('all',this)">All</div>
+    </div>
+    <div class="results-count"><span id="visibleCount">0</span> results</div>
+  </div>
+
+  <div class="grid-section">
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <div class="modal-sku" id="mSku"></div>
+        <div class="modal-name" id="mName"></div>
+        <div class="modal-tags" id="mTags"></div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
-      <div class="fg">
-        <div class="field"><label>Stock Qty <span class="req">*</span></label><input id="f_stock" type="number" min="0" placeholder="0"/></div>
-        <div class="field"><label>Price ($)</label><input id="f_price" type="number" min="0" step="0.01" placeholder="0.00"/></div>
-      </div>
-      <div class="fg">
-        <div class="field"><label>SKU / Code</label><input id="f_code" type="text" placeholder="e.g. TS-001"/></div>
-        <div class="field"><label>Unit</label><input id="f_unit" type="text" placeholder="pcs / kg / pair"/></div>
-      </div>
-      <div class="fg full">
-        <div class="field"><label>Variations</label><input id="f_variation" type="text" placeholder="S,M,L,XL or Red,Blue,Green"/><span class="hint">Separate with commas</span></div>
-      </div>
-      <div class="fg full">
-        <div class="field"><label>Image URL</label><input id="f_image" type="text" placeholder="https://…"/><span class="hint">Google Drive public link or any direct image URL</span></div>
-      </div>
-      <button class="fsub" id="fsubBtn" onclick="submitForm()"><span id="fsubTxt">✓ Add Product</span></button>
+      <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
-</div>
 
-<!-- CONFIRM -->
-<div class="conf" id="conf">
-  <div class="cbox">
-    <div class="cbox-icon">🗑️</div>
-    <h3>Delete Product?</h3>
-    <p id="confMsg"></p>
-    <div class="cbrow"><button class="cno" onclick="closeConf()">Cancel</button><button class="cyes" id="confYes">Yes, Delete</button></div>
-  </div>
-</div>
+  <div class="toast" id="toast"></div>
 
-<!-- CHANGE PASSWORD -->
-<div class="pov" id="pov">
-  <div class="pbox">
-    <h2>🔑 Change Password</h2>
-    <p>Update the shared staff password. All staff will need to use the new password.</p>
-    <div class="pbf"><label>Current Password</label><input type="password" id="pOld" placeholder="Current password"/></div>
-    <div class="pbf"><label>New Password</label><input type="password" id="pNew" placeholder="At least 4 characters"/></div>
-    <div class="pbf"><label>Confirm New Password</label><input type="password" id="pConf" placeholder="Repeat new password"/></div>
-    <div class="pberr" id="pberr"></div>
-    <button class="pbsub" onclick="changePassword()">Change Password</button>
-    <button class="pbcancel" onclick="closePov()">Cancel</button>
-  </div>
-</div>
+  <script>
+    // ─── State ───────────────────────────────────────────────────────────────────
+    let PRODUCTS = [];
+    let INVENTORY = {};
+    let activeFilter = 'all';
+    let searchQuery = '';
+    let apiUrl = localStorage.getItem('stockview_api_url') || '';
+    let autoRefreshTimer = null;
 
-<div class="toast" id="toast"></div>
+    // Fallback offline data
+    const FALLBACK_PRODUCTS = [{ "sku": "N4-057-BLK", "stockInHand": 120, "inventoryStock": 120, "model": "57", "color": "Black", "productName": "Hydraulic Saddle Rolling Ergonomic Medical Stool", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?variant=39333773115503", "notes": "standard chair", "owdId": "811585.0", "upcoming": "", "deliveries": { "Jan-26": "135(5)", "Dec": "82(0)", "Sept-25": "60.0", "Jul-25": "56.0", "Jun-25": "15.0", "May-25": "15.0", "Sept-24": "175.0", "Dec-24": "95.0" }, "sheetName": "057 - Black", "sourceFile": "057.xlsx" }, { "sku": "N4-057-2PCS-BLK", "stockInHand": 2, "inventoryStock": 2, "model": "57", "color": "Black", "productName": "Hydraulic Saddle Rolling Ergonomic Medical Stool", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?variant=39333773115503", "notes": "2 pcs of 057 in one box", "owdId": "811586.0", "upcoming": "", "deliveries": { "Jul-25": "15.0", "May-25": "10.0", "Sept-24": "20.0", "Dec-24": "20.0" }, "sheetName": "057 - Black", "sourceFile": "057.xlsx" }, { "sku": "N4-057-BLK-FOOT", "stockInHand": 7, "inventoryStock": 7, "model": "57", "color": "Black", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat & FootRest", "manufacturer": "Sit 2 Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat-footring?pr_prod_strat=e5_desc&pr_rec_id=67952dbf1&pr_rec_pid=6572760399983&pr_ref_pid=6572740837487&pr_seq=uniform&variant=39333821481071", "notes": "057 with Footrest", "owdId": "811593.0", "upcoming": "", "deliveries": { "Jan-26": "20(0)", "Jul-25": "10.0", "Jun-25": "15.0" }, "sheetName": "057 - Black", "sourceFile": "057.xlsx" }, { "sku": "N3-057-BLACK-NO-CYLD", "stockInHand": 39, "inventoryStock": 39, "model": "57", "color": "Black", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat & FootRest", "manufacturer": "", "imageUrl": "", "productUrl": "https://www.sithealthier.com/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat-footring?pr_prod_strat=e5_desc&pr_rec_id=67952dbf1&pr_rec_pid=6572760399983&pr_ref_pid=6572740837487&pr_seq=uniform&variant=39333821481071", "notes": "057 w/out cylinder", "owdId": "", "upcoming": "", "deliveries": { "Jan-26": "40(0)" }, "sheetName": "057 - Black", "sourceFile": "057.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "057 - Black", "sourceFile": "057.xlsx" }, { "sku": "N4-057-PURPLE", "stockInHand": 48, "inventoryStock": 48, "model": "57", "color": "Purple", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/sh-drll506-englishviolet-drll?variant=50207861510", "notes": "standard chair", "owdId": "811594.0", "upcoming": "", "deliveries": { "Jan-25": "30(23)", "Jul-25": "15.0", "Jun-25": "35.0", "May-25": "35.0", "Sept-24": "40.0", "Dec-24": "25.0" }, "sheetName": "057-Purple", "sourceFile": "057.xlsx" }, { "sku": "N4-057-PURPLE-FOOT", "stockInHand": 16, "inventoryStock": 16, "model": "57", "color": "Purple", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat & FootRest", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat-footring?pr_prod_strat=e5_desc&pr_rec_id=67952dbf1&pr_rec_pid=6572760399983&pr_ref_pid=6572740837487&pr_seq=uniform&variant=39333821481071", "notes": "Dark Purple with Footrest", "owdId": "828353.0", "upcoming": "", "deliveries": { "Jul-25": "10.0", "Jun-25": "5.0", "May-25": "5.0" }, "sheetName": "057-Purple", "sourceFile": "057.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "057-Purple", "sourceFile": "057.xlsx" }, { "sku": "N4-057-RUST-ORNG", "stockInHand": 20, "inventoryStock": 20, "model": "57", "color": "Rust Orange", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?variant=39333773115503", "notes": "standard chair", "owdId": "811588.0", "upcoming": "", "deliveries": { "Jan-26": "30(10)", "Jul-25": "40.0", "Jun-25": "45.0", "May-25": "45.0", "Sept-24": "50.0", "Dec-24": "10.0" }, "sheetName": "057-Rust Orange", "sourceFile": "057.xlsx" }, { "sku": "N4-057-RUST-ORNG-FOOT", "stockInHand": 34, "inventoryStock": 34, "model": "57", "color": "Rust Orange", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat & FootRest", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat-footring?pr_prod_strat=e5_desc&pr_rec_id=67952dbf1&pr_rec_pid=6572760399983&pr_ref_pid=6572740837487&pr_seq=uniform&variant=39333821481071", "notes": "with footrest", "owdId": "827953.0", "upcoming": "", "deliveries": { "Jul-25": "15.0", "Jun-25": "5.0", "May-25": "5.0" }, "sheetName": "057-Rust Orange", "sourceFile": "057.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "057-Rust Orange", "sourceFile": "057.xlsx" }, { "sku": "N4-057-VANILLA", "stockInHand": 19, "inventoryStock": 19, "model": "57", "color": "Vanilla", "productName": "Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?pr_prod_strat=e5_desc&pr_rec_id=b2de10003&pr_rec_pid=6572740837487&pr_ref_pid=6572760399983&pr_seq=uniform&variant=39333773115503", "notes": "standard chair", "owdId": "811595.0", "upcoming": "", "deliveries": { "Jan-25": "25(0)", "Dec-25": "15(0)", "Jul-25": "10.0", "Jun-25": "5.0", "May-25": "5.0", "Sept-24": "15.0" }, "sheetName": "057-Vanilla", "sourceFile": "057.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "057-Vanilla", "sourceFile": "057.xlsx" }, { "sku": "N-057-SMALL-PURPLE", "stockInHand": 28, "inventoryStock": 28, "model": "57", "color": "Puple", "productName": "Small Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat - Purple", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?variant=39333773115503", "notes": "SMALL SADDLE SHAPE", "owdId": "811589", "upcoming": "", "deliveries": { "Jul-25": "20.0", "Sept-24": "15.0", "Dec-24": "15.0" }, "sheetName": "057-Small", "sourceFile": "057.xlsx" }, { "sku": "N-057-SMALL-BLK", "stockInHand": 8, "inventoryStock": 8, "model": "57", "color": "Black", "productName": "Small Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat - Black", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?variant=39333773115503", "notes": "SMALL SADDLE SHAPE", "owdId": "811596", "upcoming": "", "deliveries": { "Jul-25": "15.0", "Jun-25": "5.0", "Sept-24": "15.0", "Dec-24": "15.0" }, "sheetName": "057-Small", "sourceFile": "057.xlsx" }, { "sku": "N-057-SMALL-RSTORNGE", "stockInHand": 0, "inventoryStock": 0, "model": "57", "color": "Rust Orange", "productName": "Small Hydraulic Saddle Shape Rolling Stool with Tilt-able Seat - Black", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/hydraulic-saddle-shape-rolling-stool-with-tilt-able-seat?variant=39333773115503", "notes": "SMALL SADDLE SHAPE", "owdId": "840618", "upcoming": "", "deliveries": {}, "sheetName": "057-Small", "sourceFile": "057.xlsx" }, { "sku": "N-019-BLK", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Old Model", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-BLK-NO-CYLD", "stockInHand": 39, "inventoryStock": 39, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "No Cylinder", "owdId": "825878.0", "upcoming": "", "deliveries": { "Jan-26": "40(0)", "July-25": "20.0", "June-25": "5.0", "Sept-24": "20.0" }, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-BLK", "stockInHand": 31, "inventoryStock": 28, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "New model", "owdId": "775790.0", "upcoming": "", "deliveries": { "Jan-26": "40(0)", "July-25": "51.0", "Sept-24": "20.0", "Nov-23": "1.0" }, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-BLK-SHORT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Old model", "owdId": "742404.0", "upcoming": "", "deliveries": { "Sept-24": "10.0" }, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-BLK-SHORT-NO-CSTR", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Short cylinder with no wheels", "owdId": "763149.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "SHHGA019BLK16", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Old Model", "owdId": "744651.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-BLK-NO-WHL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "019 no wheel included", "owdId": "775791.0", "upcoming": "", "deliveries": { "Nov-23": "25.0" }, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-BLK-Tall", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "019 with tall cylinder", "owdId": "742405.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "019-BLACK-TALL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "019 with tall cylinder", "owdId": "744652.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-BLK-Metal-Base", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Black with Metal base", "owdId": "759999.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N2-024-BLK-METAL-BASE", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Black with Metal base", "owdId": "775792.0", "upcoming": "", "deliveries": { "Nov-23": "25.0" }, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-020-BLK-FOOT-NYLB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "", "owdId": "742406.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-020-BLK-SHORT-FOOT-NYLB", "stockInHand": 1, "inventoryStock": 1, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "short cylinder, footrest , nylon base", "owdId": "742407.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-020-BLK-TALL-FOOT-NYLB", "stockInHand": 1, "inventoryStock": 1, "model": "19", "color": "Black", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "tall cylinder, footrest, nylon base", "owdId": "742408.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-020-BLK-TALL-FOOT-NYLB-INLINE", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "", "owdId": "742408.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "SHHG021BLK", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Finish this First before you use N2-24", "owdId": "744668.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-021-BLK-FOOT-CRMB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Finish this First before you use N2-24", "owdId": "742409.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-021-BLK-SHORT-FOOT-CRMB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "short cylinder, footrest, chrome base", "owdId": "742410.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-021-BLK-TALL-FOOT-CRMB", "stockInHand": 20, "inventoryStock": 20, "model": "19", "color": "Black", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "tall cylinder, footrest, chrome base", "owdId": "742411.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-022-BLK-FOOT-NYLB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Black - No Cylinder - Footring - Nylon Base", "owdId": "748773.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-22-BLK-NOCYLD-FOOT-NYLB", "stockInHand": 12, "inventoryStock": 12, "model": "19", "color": "Black", "productName": "", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "Black - Footring - Nylon Base", "owdId": "748773.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "SHHGA019BLKSML", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Black", "productName": "SMALl - Saddle Shape Stool with Adjustable Back Support and Tilt-able Seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "SMALL SADDLE SHAPE", "owdId": "744661.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-SMALL-BLK", "stockInHand": 1, "inventoryStock": 1, "model": "19", "color": "Black", "productName": "SMALL - Saddle Shape Stool with Adjustable Back Support and Tilt-able Seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/small-saddle-shape-stool-with-adjustable-back-support-and-tilt-able-seat", "notes": "SMALL SADDLE SHAPE", "owdId": "811580.0", "upcoming": "", "deliveries": { "July-25": "15.0", "Nov-23": "10.0" }, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "2005-DM-BLK", "stockInHand": 3, "inventoryStock": 3, "model": "19", "color": "Black", "productName": "ANJI Duomei - 2005-DM-BLK - Ergonomic Multi Functional Rolling Saddle Stool", "manufacturer": "Anji Duomei", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/small-saddle-shape-stool-with-adjustable-back-support-and-tilt-able-seat", "notes": "Finish this first before sending small 019", "owdId": "748849.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019 - Black", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-RUST-ORNG-NO-CSTR", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "RUST ORANGE - Medium - NO CASTERS", "owdId": "763150.0", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "021-ORNG-RUST", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "747824.0", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "N-021-RUST-ORNG", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "metal base plus footrest / old sku", "owdId": "764875.0", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-RUST-ORNG", "stockInHand": 33, "inventoryStock": 33, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "New model August 2023", "owdId": "775793.0", "upcoming": "", "deliveries": { "Jan-25": "25(13)", "July- 25": "20.0", "June- 25": "20.0", "May-25": "20.0", "Sept-24": "20.0", "Nov-23": "20.0" }, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "N2-024-RUST-ORNG-METAL-BASE", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "metal base w/out footrest", "owdId": "785400.0", "upcoming": "", "deliveries": { "Nov-23": "10.0" }, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-SMALL-RUST-ORNG", "stockInHand": 36, "inventoryStock": 36, "model": "19", "color": "Rust Orange", "productName": "SMALL - Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/small-saddle-shape-stool-with-adjustable-back-support-and-tilt-able-seat?variant=31910066421871", "notes": "SMALL SADDLE SHAPE", "owdId": "811582.0", "upcoming": "", "deliveries": { "July- 25": "10.0", "Sept-24": "15.0" }, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "019-ORNG-RUST-SHORT", "stockInHand": 0, "inventoryStock": null, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-RUST-ORNG-NO-CSTR", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "763150.0", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "021-ORNG-RUST", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Rust Onrage", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "747824.0", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "N2-021-RUST-ORNG", "stockInHand": 5, "inventoryStock": 5, "model": "19", "color": "Rust Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/ergonomic-comfortable-saddle-style-chair-with-footrest-backrest-chair?variant=40745230860399", "notes": "Footrest and Metal Base", "owdId": "811575.0", "upcoming": "", "deliveries": { "July- 25": "5.0", "June- 25": "5.0", "May-25": "5.0", "Nov-23": "3.0" }, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-RustOrange", "sourceFile": "019-021.xlsx" }, { "sku": "SHHG-A019-PRPL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "744660.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-DRK-PRPL", "stockInHand": 31, "inventoryStock": 31, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Standard chair", "owdId": "811579.0", "upcoming": "", "deliveries": { "Jan-26": "25(17)", "July - 25": "20.0", "June-25": "15.0", "May-25": "15.0", "Jan - 25": "20.0", "Sep-24": "10.0" }, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "019-PRPL-SHORT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with short cylinder", "owdId": "748909.0", "upcoming": "", "deliveries": { "Sep-24": "10.0" }, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "019-PRPL-TALL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with tall cylinder", "owdId": "748790.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "A019-PRPL-TALL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with tall cylinder", "owdId": "748910.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "A019-PRPL-SHORT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with short cylinder", "owdId": "748909.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-DRK-PRPL-NO-CYLD-NO-CSTR", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "No Cylinder No Casters", "owdId": "764869.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-DRK-PRPL-NO-CSTR", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "No Casters", "owdId": "763148.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-SMALL-PRPL", "stockInHand": 14, "inventoryStock": 14, "model": "19", "color": "Purple", "productName": "Small Saddle Shape Stool with Adjustable Back Support and Tilt-able Seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Small Saddle Shape", "owdId": "811581.0", "upcoming": "", "deliveries": { "Jan-26": "15(0)", "July - 25": "10.0", "Sep-24": "10.0" }, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-DRK-PRPL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Standard chair", "owdId": "832529.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-GREEN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "744656.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-GRN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "759036.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-GRN-NOCYLD", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health-Bo", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "No cylinder", "owdId": "748758.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-LIGHT-GREEN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "764870.0", "upcoming": "", "deliveries": { "July-25": "5.0" }, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "021-GREEN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "744686.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "N-021-GRN-FOOT-CRMB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "758851.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "N-22-GRN-NOCYLD-FOOT-NYLB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Green", "productName": "Ergonomic Comfortable Saddle Style Chair With Footrest & Backrest", "manufacturer": "Sit 2 Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "748759.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "We will be discontinuing Green Feb 06 2026 Decided by the team and AL", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-Green", "sourceFile": "019-021.xlsx" }, { "sku": "019-GREY", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Grey", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "744657", "upcoming": "", "deliveries": {}, "sheetName": "019-GREY", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-GREY", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Grey", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "811577", "upcoming": "", "deliveries": {}, "sheetName": "019-GREY", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-GREY", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Grey", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "748760", "upcoming": "", "deliveries": {}, "sheetName": "019-GREY", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-LIGHT-GREY", "stockInHand": 1, "inventoryStock": 1, "model": "19", "color": "Grey", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "764871", "upcoming": "", "deliveries": {}, "sheetName": "019-GREY", "sourceFile": "019-021.xlsx" }, { "sku": "021-GREY", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Grey", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "744685", "upcoming": "", "deliveries": {}, "sheetName": "019-GREY", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-LIGHT GREY", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Grey", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "814338", "upcoming": "", "deliveries": { "Sept-24": "15.0" }, "sheetName": "019-GREY", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-ORGNL-LGHT-BRWN", "stockInHand": 15, "inventoryStock": 15, "model": "19", "color": "Light Brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "811576.0", "upcoming": "", "deliveries": { "Jan-26": "15(6)", "July - 25": "21.0", "Sept-24": "15.0", "Nov-23": "10.0" }, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "019-LBRWN-SHORT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "748776.0", "upcoming": "", "deliveries": {}, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "019-LBRWN-TALL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "748777.0", "upcoming": "", "deliveries": {}, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "SHHGA019LBRWN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "744654.0", "upcoming": "", "deliveries": {}, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-ORGINAL-LIGHT-BROWN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "764872.0", "upcoming": "", "deliveries": { "Sept-24": "15.0" }, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "021-LIGHTBROWN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Metal base plus footrest", "owdId": "748782.0", "upcoming": "", "deliveries": {}, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-LightBrown", "sourceFile": "019-021.xlsx" }, { "sku": "SHHGA019DBWN", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Dark brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "Old SKU/model", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019 - Dark Brown ", "sourceFile": "019-021.xlsx" }, { "sku": "019-DBRWN-SHORT", "stockInHand": 3, "inventoryStock": 3, "model": "19", "color": "Dark brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair with short cylinder", "owdId": "748907.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Dark Brown ", "sourceFile": "019-021.xlsx" }, { "sku": "019-DBRWN-TALL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Dark brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with tall cylinder", "owdId": "748788.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Dark Brown ", "sourceFile": "019-021.xlsx" }, { "sku": "A019-DBRWN-TALL", "stockInHand": 4, "inventoryStock": 4, "model": "19", "color": "Dark brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair with tall cylinder", "owdId": "748908.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Dark Brown ", "sourceFile": "019-021.xlsx" }, { "sku": "021-DEEP-BROWN", "stockInHand": 5, "inventoryStock": 5, "model": "19", "color": "Dark brown", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting", "notes": "footrest and metal base", "owdId": "744684.0", "upcoming": "", "deliveries": {}, "sheetName": "019 - Dark Brown ", "sourceFile": "019-021.xlsx" }, { "sku": "We will be discontinuing Dark Brown Feb 06 2026 Decided by the team and AL", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019 - Dark Brown ", "sourceFile": "019-021.xlsx" }, { "sku": "SHHGA019RED", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "HongGang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "748906.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-RED", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "764868.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "N3-019-RED", "stockInHand": 4, "inventoryStock": 4, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "811578.0", "upcoming": "", "deliveries": { "Sept-24": "10.0" }, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "019-RED-SHORT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with short cylinder", "owdId": "748780.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "019-RED-TALL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "019 with tall cylinder", "owdId": "748781.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "021-RED", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "metal base plus footring", "owdId": "767104.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-RED", "stockInHand": 11, "inventoryStock": 11, "model": "19", "color": "Red", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "832528.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "We will be discontinuing Red Feb 06 2026 Decided by the team and AL", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-Red", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-WHT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "White", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "758847", "upcoming": "", "deliveries": {}, "sheetName": "019-White", "sourceFile": "019-021.xlsx" }, { "sku": "SHHGA019WHT", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "White", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "744655", "upcoming": "", "deliveries": {}, "sheetName": "019-White", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-WHT", "stockInHand": 1, "inventoryStock": 1, "model": "19", "color": "White", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "776005", "upcoming": "", "deliveries": { "July - 25": "5.0", "June-25": "5.0", "May-25": "5.0", "Nov-24": "10.0" }, "sheetName": "019-White", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-VNL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "vanilla", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "748754.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Vanilla", "sourceFile": "019-021.xlsx" }, { "sku": "SHHG-A019-VNL", "stockInHand": 0, "inventoryStock": null, "model": "19", "color": "vanilla", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Hongang", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-Vanilla", "sourceFile": "019-021.xlsx" }, { "sku": "N-22-VNL-NOCYLD-FOOT-NYLB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "vanilla", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "no cylinder, footrest,nylon base", "owdId": "748755.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Vanilla", "sourceFile": "019-021.xlsx" }, { "sku": "N2-019-VNL", "stockInHand": 8, "inventoryStock": 7, "model": "19", "color": "vanilla", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "828543.0", "upcoming": "", "deliveries": {}, "sheetName": "019-Vanilla", "sourceFile": "019-021.xlsx" }, { "sku": "LEGEND: Number inside parenthesis indicates stocks onhand when PO was ordered", "stockInHand": 0, "inventoryStock": null, "model": "nan", "color": "", "productName": "", "manufacturer": "", "imageUrl": "", "productUrl": "", "notes": "", "owdId": "", "upcoming": "", "deliveries": {}, "sheetName": "019-Vanilla", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-PRPL", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "standard chair", "owdId": "748762", "upcoming": "", "deliveries": {}, "sheetName": "019-Light Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N-22-PRPL-NOCYLD-FOOT-NYLB", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Light Purple", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-tilt-able-seat?variant=31364541349999", "notes": "no cylinder, footrest, nylon base", "owdId": "748763", "upcoming": "", "deliveries": {}, "sheetName": "019-Light Purple", "sourceFile": "019-021.xlsx" }, { "sku": "N-019-ORNG", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Bright Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting?variant=8115186860143", "notes": "standard chair", "owdId": "748756", "upcoming": "", "deliveries": {}, "sheetName": "019-Bright Orange", "sourceFile": "019-021.xlsx" }, { "sku": "N-021-ORNG", "stockInHand": 0, "inventoryStock": 0, "model": "19", "color": "Bright Orange", "productName": "Saddle Shape Stool with Back Support and Tilt-able seat", "manufacturer": "Sit2Health", "imageUrl": "", "productUrl": "https://www.sithealthier.com/collections/es/products/saddle-shape-stool-with-back-support-and-seat-tilting?variant=8115186860143", "notes": "footrest and metal base", "owdId": "759035", "upcoming": "", "deliveries": {}, "sheetName": "019-Bright Orange", "sourceFile": "019-021.xlsx" }];
+    const FALLBACK_INVENTORY = { "K-22-Base": 4, "K-16-ALLOY-FOOTRING": 0, "N-019-REPLACEPART": 22, "901SNL-NAVY-LEATHER": 0, "N-020-BLK-TALL-FOOT-NYLB-INLINE": 0, "SHHGCSLOCKBLK": 15, "N-057-BLK-NOCYLD-FOOT": 0, "N-057-PRPL-NOCYLD": 0, "GP-034-SH-BLK": 0, "SHHY7021-BLK": 16, "7013-BLACK": 7, "SWNG-FIT-BLK-CANDY-SALLI": 0, "4008SH-BLACK": 16, "TS-09-FOOT-SH": 0, "901SNL-NAVY-LEATHER-Openbox-SH11822": 0, "021-GREY-SH11895-2-OPENBOX": 0, "GP-ARMRST-BLK-OPENBOX-SH12084-1": 1, "N2-024-RUST-ORNG-METAL-BASE": 0, "CC-A009-INLINE-LOCK": 251, "HOC-TS-09-DBL-ARM-RST": 0, "N-020-BLK-FOOT-NYLB": 0, "901-3F-VINYL-BACKREST": 40, "SHKW900SNL2FBK": 35, "SHHGCSBIGWHL": 0, "019-BACKREST-DECO": 14, "KW-HAND-SCREWS": 5, "SALLI-HARD-WHEELS": 2, "N-019-GRN-NOCYLD": 0, "019-LBRWN-SHORT": 0, "A019-DBRWN-SHORT": 0, "A019-DBRWN-TALL": 4, "N-019-DRK-PRPL-NO-CSTR": 0, "N-ALUMINUM-BASE": 100, "SH-HY-318-PLUS-MED": 41, "N2-019-LIGHT GREY": 0, "SH17999 -SML-TWIN-NO-BACK-2F-Openbox": 1, "SH18291-901SNV-2F-BLK-VYNL-NO-CYLD-Openbox": 0, "Misc": 79, "SIT-MOVE-65": 0, "BIG-SOFT-LOCKABLE-75": 4, "SHHGA019BLK": 0, "019-BLACK-TALL": 0, "021-GREEN": 0, "SHHGACSFOOTRING": 0, "SH3007-2": 0, "019-SPARES": 0, "N-020-BLK-FOOT-NYLB Open Box": 0, "N-019-BLK Open Box SH9058": 0, "N-22-BLK-NOCYLD-FOOT-NYLB": 12, "019-DBRWN-SHORT": 3, "019-PRPL-SHORT": 0, "GP-ARMRST-BLK": 0, "019-BLACK-TALL-INLINE-SH9775-OPENBOX": 0, "SML-TWIN-NO-BACK-2F": 29, "SCREW-DECO-PART-KW": 12, "N-019-WHT": 0, "SHKW901SNV2FBKV-Openbox-SH10517": 0, "N-019-ORGINAL-LIGHT-BROWN": 0, "K-2-LOCKWHEELS": 70, "SIT-3-LCK-INLN-WHLS": 0, "BIG-GLIDES-PADDED": 0, "SHHG-A019-PRPL": 0, "057-ORNG-RUST": 0, "021-GREY": 0, "LEFT-ARMREST": 0, "N-020-BLK-FOOT-NYLB-DEMO": 0, "SOMA-SADDLE-NB": 0, "SALLI-MINI-METAL": 1, "7021-BK-REST-BLK": 3, "N-019-PNK-NOCYLD": 0, "057-BLACK-TALL": 0, "GP-DOUBLE-ARM-BLK": 0, "A019-NOTILT-WHITE-OPENBOX-SH9365": 0, "SHHG-A019-BLK": 0, "SHHGA019WHT-OpenBox-SH9816": 0, "GP-ARMRST-BLK-MSHOLDER": 0, "901SNL-2F-BLK-LTH-NO-CYLD": 65, "N-019-BLK-FOOT-NYLB-DISTOOL-OPENBOX-SH10972": 0, "MS14-2-SPLIT-BACK-BLK-Footring-Openbox-SH11823": 0, "SHKW901SNV2FWN": 5, "SHKWCYLSM210MM": 0, "SHHGA019PNK": 0, "SHHG021BLK": 0, "SHHGACS02BSEBLK": 0, "TWIN-MECHANISM-ONLY": 15, "SALLI-MINI-BLACK": 1, "STANDARD-WHEELS": 0, "N-057-PRPL-NOCYLD-FOOT": 0, "S312-SH": 0, "CLASSIC-R-BLU-SALLI": 1, "TWIN-SEAT-ONLY": 18, "MS13-2-SPLIT-BLK": 0, "N-019-RUST-ORNG-NO-CSTR": 0, "N-057-ORIGINAL-RUST-ORNG": 0, "FG-ARMREST-TAPSCREW": 1, "N2-021-RUST-ORNG": 5, "EMTY-BOX-S2H-021": 0, "HOC-D19-2-1-SH": 3, "HY-SPARE-312-and-318-CURV": 14, "N2-019-LIGHT-GREEN": 0, "K-SILENT-WHEELS": 0, "SHKW901SNV2FGRN": 8, "SHKWFTRNGDK3": 0, "CYLINDER-MINI-12": 1, "N-019-VNL": 0, "SCREWS-FOR-MECH-KW": 15, "N2-019-WHT": 1, "N-MINI-CYLINDER": 44, "HOC-HQ-600": 0, "N4-057-PURPLE": 48, "901SNL-NAVY-LEATHER-OpenBox": 1, "4008SH-BLACK-openbox-SH15357": 0, "TWIN-MECHANISM-ONLY-SH16240": 1, "SH-HQ-E3": 6, "N4-057-BLK-SH17042-SPAREPARTS": 1, "SHWL-1430-GGFF-SH15861": 1, "N2-019-VNL-SH18154-Openbox": 0, "SH18301-SHHY7021-BLK-Openbox": 0, "K-16-STEEL-FOOTRING": 0, "901SNL-WHT-LEATHER": 0, "SIT-BRAKE-50": 32, "SHHGA019WHT": 0, "BAMBACH-MDM-CYLD": 0, "N-020-BLK-FOOT-NYLB Open Box SH9158": 0, "SHKW901SBL3FBKL Open Box SH9282": 0, "021-GREEN-OPENBOX-SH9353": 0, "N-057-BLK-NOCYLD": 0, "021-LIGHTBROWN": 0, "GP-004-SH-BLK": 0, "KNOB-SHHY7021": 4, "SWNG-FIT-BLK-LIM-SALLI": 0, "GP-TS-09-DBL-ARM-RST": 0, "901SNV-2F-BLK-VYNL-NO-CYLD": 0, "N-057-DRK-PRPL-NO-CSTR": 0, "N-CYLINDER-MEDIUM-200": 49, "N-020-BLK-TALL-FOOT-NYLB-OPENBOX-SH11521": 0, "K-140-FOOT-CONTROL": 15, "SH-HY-312-SQUARE": 0, "N2-019-BLK": 28, "N-020-BLK-SHORT-FOOT-NYLB": 1, "N-020-BLK-TALL-FOOT-NYLB": 1, "SHHGA057PNK": 0, "019-KNOBS-CYLD-DECO": 1, "SALLI-MEDIUM-BLK": 0, "KW-VNYL-WINE-SEAT": 1, "SALLI-SOFT-WHEELS": 0, "021-ORNG-RUST": 0, "N-22-GRN-NOCYLD-FOOT-NYLB": 0, "N-019-GREY": 0, "N-022-BLK-FOOT-NYLB": 0, "A019-PRPL-SHORT": 0, "A019-PRPL-TALL": 0, "N-019-BLK-SHORT-NO-CSTR": 0, "N-019-LIGHT-GREY": 1, "021-DEEP-BROWN-Openbox-SH12380": 0, "SHHY7021-BLK-OpenBox-SH12637": 0, "N-019-BLK-Openbox-SH13268": 0, "SHHG021BLK-openbox-SH13723": 0, "SH-HY-312-SQUARE-MED": 30, "SH-HY-318-PLUS-CURVE-MED": 30, "N-019-BLK": 0, "N-019-BLK-Tall": 0, "N-021-BLK-SHORT-FOOT-CRMB": 0, "SIT-3-INLINE-WHEELS": 0, "021-DEEP-BROWN": 5, "021-GREEN DEMO": 0, "KW-BK-REST-VYNL": 0, "A019-NOTILT-WHITE": 0, "N-22-VNL-NOCYLD-FOOT-NYLB": 0, "N-019-PRPL": 0, "N-057-BLK": 0, "019-GREY-openbox-SH9380": 0, "GP-ARMRST-HOLDERKNB": 2, "N-024-BLK-METAL-BASE": 0, "S318-SH-Openbox-SH11788": 0, "N2-019-RUST-ORNG": 33, "GP-FOSHAN-GOLDEN-SPARE-PARTS": 0, "SHKW360ARMRST-openbox-SH13723": 0, "CC-A003-INLINE-BOX": 0, "CC-A1575-3-INCH-PU-WHL-EMPTY-BOX": 0, "N-021-BLK-FOOT-CRMB": 0, "SHHGA057PRPL": 0, "019-PRPL-TALL": 0, "N-021-ORNG": 0, "N-019-GRN": 0, "N-260CM-TALL-CYLINDER": 19, "N-019-DRK-PRPL-NO-CYLD-NO-CSTR": 0, "N3-057-BLACK-TALL": 0, "HY7020-NO-BACK-BLK-500LBS": 43, "N-019-DRK-PRPL": 31, "N2-019-SMALL-BLK": 1, "AluminumBase": 0, "N-ALUMINUM- BASE": 0, "HOC-TS09-JST-BKRST": 3, "H0C-TS09-JST-BKRST": 0, "SHHG021BLK-SH16539-Openbox": 0, "N2-019-WHT-SH17599-OpenBox": 0, "SH18232-N4-057-PURPLE-Openbox": 0, "SH15822-N4-057-PURPLE-Openbox": 1, "SPAREPRTS-SH17636": 1, "K-19-BASE": 18, "SHKW901SNL-2FBLK": 45, "SHKW360ARMRST": 0, "019-GREY": 0, "SHHGCSSOFTBLK": 0, "SALLI-BLK-STND-BASE": 1, "019-GREEN-OPENBOX-SH9353": 0, "N-057-PRPL": 0, "057-BLACK-FOOTREST": 0, "GP-050A-SH-BLK": 0, "SHHY7021-PRPL": 2, "MULTI-BLK-CANDY-SALLI": 0, "N-019-BLK-Metal-Base": 0, "TS-01-RND-SNGL-HND-RST": 8, "K-MEDIUM-CYLINDERS": 0, "N-057-BLK-Openbox-SH11785": 0, "021-GREY-SH11895-1-OPENBOX": 0, "N2-024-BLK-METAL-BASE": 0, "GP-TS-09-SH-Openbox-SH11815": 0, "GP-ARMRST-BLK-OPENBOX-SH12084-2": 0, "901-TWIN-BACK-3F": 1, "N-057-ORIGINAL-RUST-ORNG-Openbox-SH12810": 0, "TS09-SH": 0, "SHKW901SBL3FBKL": 30, "SHKWCYLMD285MM": 57, "BIG-SOFT-WHEEL-75": 0, "SHHGA019BLK16": 0, "SHHGA019DBWN": 0, "KW- 3F-VINYL-BACK-NoSeat": 0, "SALLI-SWINGFIT": 0, "N-019-BLK-NOCYLD": 0, "019-RED-TALL": 0, "019-DBRWN-TALL": 0, "SML-TWIN-BACK-3F": 30, "900SNL-SEAT-ONLY": 0, "901-VINYL-SEAT-ONLY": 6, "MS13-2-SPLIT-MS-YLW": 0, "N-019-ORNG-OpenBox-SH10999": 0, "N3-057-BLACK-SHORT": 0, "901-3F-VINYL-BACKREST-Openbox-SH12535": 0, "N-019-BLK-Openbox-SH11873": 0, "N3-019-RED": 4, "N4-057-BLK": 120, "360-ARM-LEATHER": 0, "3F-MECHANISM-ONLY": 15, "SHHGA019LBRWN": 0, "019-GREEN": 0, "4008-SOFT-WHEELS": 0, "4008-SPARES": 9, "021-PURPLE": 0, "057-BLACK-SHORT": 0, "2005-DM-BLK": 3, "MULTI-BLK-LIM-SALLI": 0, "GP-TS-09-SH": 0, "N-019-BLK-NOCYLD-OPENBOX-SH10577": 0, "N-CYLINDER-SMALL-160": 37, "K-180-FOOT-CONTROL": 19, "4008-1-BACKREST-BLACK": 8, "N2-019-BLK-NO-WHL": 0, "N-019-BLK-Metal-Base-Openbox-SH12106": 0, "N3-057-BLACK-NO-WHEELS": 0, "SH-HY-3007-BLK": 7, "K-SHORT-160-CYLD": 0, "K-DOUBLEARMREST": 36, "SHST208-18": 0, "SHKW901SNV2FCH": 0, "SHKWCYLTL385MM": 0, "SHHGA019BLKSML": 0, "SHHGA057VNL": 0, "SHHGACS05CYLND26": 0, "ARMREST-SHHG": 0, "SALLI-SHORT-BLK": 0, "SALLI-MEDIUM-METALLIC": 0, "019-RED-SHORT": 0, "019-GREEN-OPENBOX-SH10351": 0, "SHKW360ARMRST-OPENBOX-SH10894": 0, "N-057-BLK-NO-CSTR": 0, "N-057-BLK-Openbox-SH11275": 0, "SHHY4008-BLK": 0, "SH-HY-318-PLUS": 0, "N-019-LBRWN-Footring-Openbox-SH12314": 0, "N-019-ORNG-OPENBOX-SH12465": 0, "N3-057-BLACK-FOORST": 0, "N2-019-GREY": 0, "N4-057-2PCS-BLK": 2, "KW-DISASSEMBLE-TOOL": 216, "KW-CHROME-BASE": 36, "SMALL-GLIDES-PADED": 0, "019-LBRWN-TALL": 0, "SHHGCSSILENT": 0, "N-021-GRN-FOOT-CRMB": 0, "MS14-2-SPLIT-BACK-BLK": 0, "N-FootRing": 47, "N-019-RED": 0, "N3-057-BLACK-NO-CYLD": 39, "N2-019-SMALL-PRPL": 14, "N2-019-SMALL-RUST-ORNG": 36, "N4-057-VANILLA": 19, "N-057-SMALL-BLK": 8, "EMPTY-BOX-S2H-ALUMINM-BASE": 50, "HOC-TS-09-BCKRST-ROD-ONLY": 0, "HY-SPARE-7020": 6, "N2-019-VNL": 7, "SH16244-901SNL-WHT-LEATHER-Openbox": 0, "SH17765-N2-019-BLK-Openbox": 0, "SH17908-HOC-SINGLE-ARMREST-SpareParts": 1, "HI-3-LCK-INLN-WHLS": 1, "CC-A009-INLINE-LOCK-FL": 0, "K-3-INLINE-WHEELS": 0, "N-019-BLK-SHORT": 0, "N-021-BLK-TALL-FOOT-CRMB": 20, "SHKW901SNV2FBKV": 0, "CYLINDER-STANDARD-20": 0, "SALLI-SHORT-METAL": 2, "N-019-ORNG": 0, "N-22-PRPL-NOCYLD-FOOT-NYLB": 0, "SHHGA019RED": 0, "S318-SH": 0, "SALLI-MULTI-SMALL-LBLACK-OPENBOX-SH10593": 0, "N-057-DRK-PRPL-NO-CYLD-NO-CSTR": 0, "N-021-RUST-ORNG": 0, "021-RED": 0, "HOC-DOUBLE-ARMREST": 9, "N2-019-SMALL-BLK-SH15854-OpenBox": 0, "SH16513-N2-019-BLK-OpenBox": 0, "CC-3221-SBIG-GLIDES": 17, "SHKW901SNL-2FBLK-OpenBox": 0, "CC-A012-TRANSPARENT": 240, "N4-057-BLK-SH15377": 0, "SHHY7021-PRPL-SH15993-openbox": 1, "N-019-GREEN": 0, "SH18030-SHKW901SBL3FBKL-Openbox": 0, "SH-RUDYJD240222-2-BACKREST": 3, "N-019-PRPL-SH15295": 0, "KW-CHROME-BASE-SH16326-SPARE": 1, "K-BLK-CYLD-160": 25, "N2-019-RED": 11, "SH-HY7020-BLK-500LBS-SH17342-Openbox": 0, "N2-019-ORGNL-LGHT-BRWN-SH17149-Openbox": 0, "N2-019-RUST-ORNG-SH17644": 0, "SHKW901SNL-2FBLK-NoMech": 1, "500 LBS Aluminium Base": 0, "SHKW901SNL-2FBLK-SH15332-Openbox": 1, "K-TALL-CYLD": 0, "SH18000-N4-057-BLK-Openbox": 0, "SH18000-NFootring": 0, "SH17455-K-SHORT-160-CYLD-Opebox": 1, "Openbox- N-057-BLK-NO-CSTR -SH11938": 0, "SH-HY-9006-BLK": 1, "BAMBACH-TORO-SH13390": 0, "SH-RUDYJD240222-1-NO-BACK": 0, "N4-057-RUST-ORNG": 20, "CC-A012- TRANSPARENT": 17, "SH-HY7020-BLK-FOOT-500LBS": 10, "N2-019-DRK-PRPL": 0, "N2-019-SMALL-BLK-SH17341-Openbox": 1, "HAIYUE-NYLON-BSE-500": 24, "HOC-SINGLE-ARMREST": 28, "HaiyueSpareParts": 0, "SH-HY-3007-BLK-SH14571": 0, "HOC-TS-09-NO-HND-RST": 13, "WL-1430-GG": 0, "CC-3215B-BELL-GLIDE": 4, "903 SEAT INNER BOX": 0, "SH7021-BCKRST-SCREWKNOB": 12, "SH18258-N-019-GRN-Openbox": 0, "N-057-SMALL-PURPLE": 28, "CC-A004-DUAL": 205, "HOC-TS-09-SH": 0, "N2-019-BLK-NO-CYLD": 39, "K-ALUMN-FOOTREST": 9, "4008SH-ORNG": 7, "S2H-STANDARD-WHL": 202, "N-057-SMALL-RSTORNGE": 0, "HY7012 - No Base": 2, "N4-057-RUST-ORNG-FOOT": 34, "N2-019-RUST-ORNG-SH16347-Openbox": 1, "HY-ALUMINUM-BSE-19": 27, "CC-A009-INLINE-LOCK-5": 99998, "N2-019-BLK-SH17521-Openbox": 0, "SH18147-N4-057-PURPLE-Openbox": 0, "HOC-TS-01-RND-SNGL-HND-RST": 0, "N3-057-BLK": 0, "GP-TS-09-SH-Openbox-SH12491": 0, "N-057-PRPL-SH12193-OPENBOX": 0, "N-019-BLK-SH12346-OPENBOX": 0, "4008SH-BLACK-Openbox-SH12480": 0, "SALLI-SEAT-COVER-LIGHT-GREY": 1, "019-GREY-SH12833-OPENBOX": 0, "SML-TWIN-BACK-3F-NO-MECH": 1, "N4-057-BLK-FOOT": 7, "TS09-BACKRESTONLY": 0, "N2-019-SMALL-BLK-SH17173-OpenBox": 0, "S2H-NYLON-BASE": 31, "SHKW901SNL-2FBLK-SH13365-Openbox": 1, "SIT-MOVE-2-INCH": 32, "2005-DM-BLK-SH16781-Openbox": 1, "SH18037-901SNV-2F-BLK-VYNL-NO-CYLD-Openbox": 0, "N-021-BLK-TALL-FOOT-CRMB+GLIDES": 0, "CC-A003-INLINE": 301, "SH-RUDY-MEDITATION-JD240": 0, "N-ROUND-SEAT": 0, "HOC-021-BLK": 0, "SH-HY7020-BLK-500LBS": 15, "N4-057-PURPLE-FOOT": 16, "STANDARD-WHEELS-SH16326-SPARE": 0, "BST-325-020-BLACK-FRM": 7, "K-BLK-CYLD-200": 34, "HQ-20240417 023-DTL": 2, "N2-019-SMALL-PRPL-SH17262-OPENBOX": 1, "TS09-ARMRST-BRCKT": 0, "SH-HY-318-PLUS-CURVE": 0, "N3-057-VANILLA": 0, "N-057-BLK-NO-CSTR-OPENBOX-SH12130": 0, "N3-057-BLK-OPENBOX-SH13012": 0, "CC-A1575-3-INCH-PU-WHEELS": 246, "N2-019-ORGNL-LGHT-BRWN": 15, "EMTY-BOX-S2H-019": 0, "N-PACKING-TAPE": 0, "HOC-DOUBLE-ARMREST-SCREWSONLY": 1, "N4-057-PURPLE-OPENBOX-SH16079": 0, "HY4008-BLK-NO-BASE": 6, "HOC-D19-2-CURVE": 7, "HY-SPARE-4008": 5, "SH-HAG-D-19-24": 0, "SH-HY7020-BLK-500LBS-SH16849-Openbox": 0, "HAIYUE-STANDARD-WHEELS": 36, "CC-A003-INLINE-5": 99998, "CC-A003-INLINE-FL": 0, "SH18037-CC-A004-DUAL-Openbox": 1 };
 
-<script>
-// ━━━━━━━━━━ CONFIG ━━━━━━━━━━
-const LOW = 10, MID = 30;
-const DEFAULT_PASS = 'staff1234';
-
-// ━━━━━━━━━━ STATE ━━━━━━━━━━
-let all=[], shown=[], maxQ=1;
-let fCat='all', fStock='all', sortBy='name';
-let apiUrl  = localStorage.getItem('sf_url') || '';
-let isStaff = sessionStorage.getItem('sf_auth') === '1';
-let currentP=null, formMode='add';
-
-const getPass = () => localStorage.getItem('sf_pass') || DEFAULT_PASS;
-
-// ━━━━━━━━━━ BOOT ━━━━━━━━━━
-(function(){
-  if(apiUrl){ document.getElementById('apiIn').value=apiUrl; fetchData(); }
-  updateStaffUI();
-})();
-
-// ━━━━━━━━━━ SETUP ━━━━━━━━━━
-function toggleSetup(){
-  const d=document.getElementById('drawer');
-  d.classList.toggle('open');
-  if(d.classList.contains('open'))
-    document.getElementById('pwdSetInput').value = getPass();
-}
-
-function connectSheet(){
-  const v=document.getElementById('apiIn').value.trim();
-  if(!v.includes('script.google.com')){ toast('Invalid Apps Script URL','error'); return; }
-  localStorage.setItem('sf_url',v); apiUrl=v;
-  document.getElementById('drawer').classList.remove('open');
-  fetchData();
-}
-
-function savePassword(){
-  const v=document.getElementById('pwdSetInput').value.trim();
-  if(v.length<4){ toast('Password must be at least 4 characters','error'); return; }
-  localStorage.setItem('sf_pass',v);
-  toast('✅ Staff password saved!','success');
-}
-
-// ━━━━━━━━━━ AUTH ━━━━━━━━━━
-function openLogin(){
-  document.getElementById('pwdInput').value='';
-  document.getElementById('lerr').textContent='';
-  document.getElementById('lov').classList.add('on');
-  document.body.style.overflow='hidden';
-  setTimeout(()=>document.getElementById('pwdInput').focus(),200);
-}
-function closeLov(){ document.getElementById('lov').classList.remove('on'); document.body.style.overflow=''; }
-function maybeCloseLov(e){ if(e.target===document.getElementById('lov')) closeLov(); }
-function togglePwd(){ const i=document.getElementById('pwdInput'); i.type=i.type==='password'?'text':'password'; }
-
-function doLogin(){
-  const v=document.getElementById('pwdInput').value;
-  if(v===getPass()){
-    isStaff=true; sessionStorage.setItem('sf_auth','1');
-    closeLov(); updateStaffUI();
-    toast('✅ Logged in as staff!','success');
-  } else {
-    document.getElementById('lerr').textContent='Incorrect password. Please try again.';
-    document.getElementById('pwdInput').select();
-  }
-}
-
-function doLogout(){
-  isStaff=false; sessionStorage.removeItem('sf_auth');
-  updateStaffUI(); toast('Logged out','info');
-}
-
-function updateStaffUI(){
-  document.getElementById('loginBtn').style.display  = isStaff?'none':'flex';
-  document.getElementById('addBtn').style.display    = isStaff?'flex':'none';
-  document.getElementById('logoutBtn').style.display = isStaff?'flex':'none';
-  document.getElementById('staffBar').classList.toggle('show', isStaff);
-  const ms=document.getElementById('mAdminSec');
-  if(ms) ms.classList.toggle('show',isStaff);
-  if(shown.length) render();
-}
-
-// ━━━━━━━━━━ CHANGE PASSWORD ━━━━━━━━━━
-function openChangePwd(){ closeLov(); document.getElementById('pov').classList.add('on'); }
-function closePov(){ document.getElementById('pov').classList.remove('on'); }
-
-function changePassword(){
-  const old=document.getElementById('pOld').value;
-  const nw=document.getElementById('pNew').value;
-  const cf=document.getElementById('pConf').value;
-  const err=document.getElementById('pberr');
-  if(old!==getPass()){ err.textContent='Current password is incorrect.'; return; }
-  if(nw.length<4){ err.textContent='New password must be at least 4 characters.'; return; }
-  if(nw!==cf){ err.textContent='Passwords do not match.'; return; }
-  localStorage.setItem('sf_pass',nw);
-  closePov();
-  toast('✅ Password changed successfully!','success');
-}
-
-// ━━━━━━━━━━ FETCH ━━━━━━━━━━
-async function fetchData(){
-  document.getElementById('syncBtn').classList.add('spinning');
-  document.getElementById('grid').innerHTML=`<div class="state"><div class="ldr"><span></span><span></span><span></span></div><p>Loading products…</p></div>`;
-  try{
-    const r=await fetch(apiUrl+'?cb='+Date.now());
-    const j=await r.json();
-    all=parse(j.products||[]);
-    maxQ=Math.max(...all.map(p=>p.stock),1);
-    buildCats(); doFilter(); updateStats();
-    document.getElementById('ldot').style.display='block';
-    document.getElementById('foot').textContent='Last synced: '+new Date().toLocaleString('en-AU');
-    toast(`✅ ${all.length} products loaded`,'success');
-  }catch{
-    document.getElementById('grid').innerHTML=`<div class="state"><span class="ico">⚠️</span><p>Could not load data from Google Sheets</p><small>Check your URL and make sure access is set to "Anyone"</small></div>`;
-    toast('Failed to load data','error');
-  }finally{ document.getElementById('syncBtn').classList.remove('spinning'); }
-}
-
-function syncData(){ if(apiUrl) fetchData(); else toast('Connect a Google Sheet first (⚙ Settings)','info'); }
-setInterval(()=>{ if(apiUrl) fetchData(); }, 300000);
-
-// ━━━━━━━━━━ PARSE ━━━━━━━━━━
-function parse(rows){
-  return rows.map((row,i)=>{
-    const g=(...keys)=>{ for(const k of keys){ const f=Object.keys(row).find(rk=>rk.toLowerCase().includes(k)); if(f!==undefined&&row[f]!=='') return String(row[f]); } return ''; };
-    return {
-      id:i, _row:row._row||0,
-      name:     g('name','product','item')||`Product ${i+1}`,
-      stock:    parseFloat(g('stock','qty','quantity'))||0,
-      price:    parseFloat(g('price','rate','cost'))||0,
-      category: g('category','cat','type')||'Uncategorised',
-      code:     g('code','sku','id'),
-      unit:     g('unit')||'pcs',
-      variations:(g('variation','var','size','colour','color')||'').split(/[,،|\/]/).map(v=>v.trim()).filter(Boolean),
-      image:    g('image','img','photo','picture'),
+    // ─── Color map ────────────────────────────────────────────────────────────────
+    const COLOR_MAP = {
+      black: '#2d2d2d', white: '#f0f0f0', red: '#e53935', purple: '#9c27b0',
+      'light purple': '#ce93d8', 'dark purple': '#6a1b9a', puple: '#9c27b0',
+      vanilla: '#f5e6c8', grey: '#9e9e9e', gray: '#9e9e9e', green: '#43a047',
+      'rust orange': '#bf360c', 'rust onrage': '#bf360c', orange: '#ef6c00',
+      'bright orange': '#ff6d00', 'light brown': '#a1887f', 'dark brown': '#4e342e',
+      blue: '#1e88e5', pink: '#e91e63', yellow: '#fdd835'
     };
-  }).filter(p=>p.name);
-}
+    function colorDot(c) { const k = (c || '').toLowerCase().trim(); return `<span class="color-dot" style="background:${COLOR_MAP[k] || '#555'}"></span>` }
+    function stockCls(n) { return n <= 0 ? 'sz' : n <= 10 ? 'sl' : n <= 50 ? 'sm' : 'sh' }
+    function stockColor(n) { return n <= 0 ? 'var(--text3)' : n <= 10 ? 'var(--red)' : n <= 50 ? 'var(--yellow)' : 'var(--green)' }
 
-// ━━━━━━━━━━ HELPERS ━━━━━━━━━━
-const lv=s=>s<=LOW?'low':s<=MID?'mid':'ok';
-const lvL={ok:'In Stock',mid:'Low Stock',low:'Critical'};
-const lvC={ok:'var(--green)',mid:'var(--amber)',low:'var(--red)'};
+    // ─── API URL ──────────────────────────────────────────────────────────────────
+    if (apiUrl) document.getElementById('apiUrlInput').value = apiUrl;
 
-// ━━━━━━━━━━ CATEGORIES ━━━━━━━━━━
-function buildCats(){
-  const cs=['All',...new Set(all.map(p=>p.category))];
-  document.getElementById('catStrip').innerHTML=cs.map((c,i)=>
-    `<div class="tag ${i===0?'active':''}" onclick="setCat('${c==='All'?'all':c}',this)">${c}</div>`
-  ).join('');
-}
-function setCat(c,el){ fCat=c; document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); doFilter(); }
-function setSF(s,el){ fStock=s; document.querySelectorAll('.stag').forEach(t=>t.classList.remove('active')); el.classList.add('active'); doFilter(); }
+    function toggleApiPanel() {
+      const panel = document.getElementById('apiPanel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+    // Close panel when clicking outside
+    document.addEventListener('click', function (e) {
+      const panel = document.getElementById('apiPanel');
+      const btn = document.getElementById('apiConnectBtn');
+      if (panel && panel.style.display !== 'none' && !panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.style.display = 'none';
+      }
+    });
 
-// ━━━━━━━━━━ FILTER + RENDER ━━━━━━━━━━
-function doFilter(){
-  const q=(document.getElementById('hSearch').value||'').toLowerCase().trim();
-  shown=all.filter(p=>{
-    const l=lv(p.stock);
-    return (fCat==='all'||p.category===fCat)&&(fStock==='all'||l===fStock)&&
-           (!q||p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)||p.variations.some(v=>v.toLowerCase().includes(q)));
-  });
-  shown.sort((a,b)=>sortBy==='name'?a.name.localeCompare(b.name):sortBy==='pl'?a.price-b.price:sortBy==='ph'?b.price-a.price:sortBy==='sl'?a.stock-b.stock:b.stock-a.stock);
-  const ri=document.getElementById('ri');
-  if(q){ ri.style.display='flex'; ri.innerHTML=`Results for "<strong>${q}</strong>" &nbsp;<span class="rb">${shown.length} found</span>`; }
-  else ri.style.display='none';
-  render();
-}
+    function saveApiUrl() {
+      const val = document.getElementById('apiUrlInput').value.trim();
+      if (!val) return showToast('❌ URL দাও');
+      document.getElementById('apiPanel').style.display = 'none';
+      apiUrl = val;
+      localStorage.setItem('stockview_api_url', val);
+      loadData(true);
+    }
 
-function render(){
-  const grid=document.getElementById('grid');
-  if(!shown.length){ grid.innerHTML=`<div class="state"><span class="ico">🔍</span><p>No products found</p></div>`; return; }
-  grid.innerHTML=shown.map((p,i)=>{
-    const l=lv(p.stock),clr=lvC[l],bw=Math.min(p.stock/maxQ*100,100).toFixed(1);
-    const img=p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`:`<div class="noimg">📦</div>`;
-    const vps=p.variations.length?`<div class="vpills">${p.variations.slice(0,4).map(v=>`<span class="vp">${v}</span>`).join('')}${p.variations.length>4?`<span class="vp">+${p.variations.length-4}</span>`:''}</div>`:'';
-    const staffOv=isStaff?`<div class="cadmin show"><button class="cact edit" onclick="event.stopPropagation();editIdx(${i})">✏️ Edit</button><button class="cact del" onclick="event.stopPropagation();confirmDel(${i})">🗑 Delete</button></div>`:'';
-    return `<div class="card" style="animation-delay:${i*.04}s" onclick="openDetail(${i})">
-      <div class="cimg">${img}<div class="ibadge ${l}">${lvL[l]}</div>${staffOv}</div>
-      <div class="cbody">
-        <div class="ccat">${p.category}</div>
-        <div class="cname">${p.name}</div>
-        ${p.code?`<div class="csku">#${p.code}</div>`:''}
-        ${vps}
-        <div class="cfoot"><div class="cprice">${p.price?'$'+p.price.toFixed(2):'—'}</div><div class="cstk">Stock: <strong>${p.stock}</strong> ${p.unit}</div></div>
-        <div class="sbar"><div class="sbf" style="width:${bw}%;background:${clr}"></div></div>
+    // ─── Data loading ─────────────────────────────────────────────────────────────
+    // JSONP fetch — bypasses CORS for Google Apps Script
+    // Apps Script does a 302 redirect; JSONP handles it via <script> tag
+    function fetchJSONP(baseUrl, options = {}) {
+      return new Promise((resolve, reject) => {
+        const cbName = '__sv_' + Date.now();
+        const script = document.createElement('script');
+        const timer = setTimeout(() => { cleanup(); reject(new Error('Timeout after 20s')); }, 20000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[cbName];
+          script.parentNode && script.parentNode.removeChild(script);
+        }
+
+        window[cbName] = function (data) { cleanup(); resolve(data); };
+        script.onerror = function () { cleanup(); reject(new Error('Could not load Apps Script URL — check deployment settings')); };
+
+        // Strip any existing callback param, then add ours
+        const clean = baseUrl.replace(/[?&]callback=[^&]*/g, '').replace(/[?&]_t=[^&]*/g, '');
+        const sep = clean.includes('?') ? '&' : '?';
+        // noCache flag forces Apps Script to bypass its cache
+        const nc = options.noCache ? '&nocache=1' : '';
+        script.src = clean + sep + 'callback=' + cbName + nc + '&_t=' + Date.now();
+        document.head.appendChild(script);
+      });
+    }
+
+    async function loadData(force = false) {
+      const btn = document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+      setApiStatus('loading', 'Connecting…');
+
+      if (apiUrl) {
+        try {
+          const data = await fetchJSONP(apiUrl, { noCache: force });
+          if (data.error) throw new Error(data.error);
+
+          PRODUCTS = data.products || [];
+          INVENTORY = data.inventory || {};
+
+          if (data.lastUpdated) {
+            const d = new Date(data.lastUpdated);
+            document.getElementById('lastUpdatedTime').textContent = d.toLocaleString();
+            document.getElementById('lastUpdatedBar').style.display = 'flex';
+          }
+
+          setApiStatus('connected', 'Live — Google Sheets');
+          const btn = document.getElementById('apiConnectBtn');
+          if (btn) { btn.textContent = '✅ Live'; btn.style.borderColor = 'var(--green)'; btn.style.color = 'var(--green)'; }
+          document.getElementById('statDot').classList.remove('offline');
+          showToast('✅ Live data loaded — ' + PRODUCTS.length + ' products');
+          startAutoRefresh();
+        } catch (e) {
+          console.error('API error:', e);
+          setApiStatus('disconnected', 'Connection failed');
+          document.getElementById('statDot').classList.add('offline');
+          showToast('⚠️ API error — showing cached data');
+          useFallback();
+        }
+      } else {
+        useFallback();
+        setApiStatus('disconnected', 'No API — Offline data');
+      }
+
+      btn.classList.remove('spinning');
+      buildFilterChips();
+      renderGrid();
+    }
+
+    function useFallback() {
+      PRODUCTS = FALLBACK_PRODUCTS;
+      INVENTORY = FALLBACK_INVENTORY;
+      PRODUCTS.forEach(p => { if (INVENTORY[p.sku] !== undefined) p.inventoryStock = INVENTORY[p.sku]; });
+    }
+
+    function setApiStatus(state, text) {
+      const dot = document.getElementById('apiDot');
+      dot.className = 'api-dot ' + (state === 'connected' ? 'connected' : state === 'loading' ? 'loading' : 'disconnected');
+      document.getElementById('apiStatusText').textContent = text;
+    }
+
+    // Auto-refresh every 5 minutes when connected
+    function startAutoRefresh() {
+      clearInterval(autoRefreshTimer);
+      autoRefreshTimer = setInterval(() => loadData(false), 10 * 1000); // check every 10s
+    }
+
+    // ─── Filters ──────────────────────────────────────────────────────────────────
+    function buildFilterChips() {
+      const chips = document.getElementById('filterChips');
+      chips.innerHTML = '<div class="chip active" data-filter="all" onclick="setFilter(\'all\',this)">All</div>';
+      const models = [...new Set(PRODUCTS.map(p => p.model).filter(m => m && m !== 'nan' && m !== ''))].sort();
+      models.forEach(m => {
+        const d = document.createElement('div');
+        d.className = 'chip'; d.dataset.filter = m;
+        d.textContent = 'Model ' + m;
+        d.onclick = function () { setFilter(m, this); };
+        chips.appendChild(d);
+      });
+      ['In Stock', 'Out of Stock'].forEach(s => {
+        const d = document.createElement('div');
+        d.className = 'chip'; d.dataset.filter = s;
+        d.textContent = s;
+        d.onclick = function () { setFilter(s, this); };
+        chips.appendChild(d);
+      });
+      if (activeFilter !== 'all') {
+        const active = chips.querySelector(`[data-filter="${activeFilter}"]`);
+        if (active) { chips.querySelector('.active').classList.remove('active'); active.classList.add('active'); }
+      }
+    }
+
+    function setFilter(v, el) {
+      activeFilter = v;
+      document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderGrid();
+    }
+
+    // ─── Search ───────────────────────────────────────────────────────────────────
+    document.getElementById('searchInput').addEventListener('input', function () {
+      searchQuery = this.value.trim().toLowerCase();
+      document.getElementById('searchClear').classList.toggle('vis', !!searchQuery);
+      renderGrid();
+    });
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      searchQuery = '';
+      document.getElementById('searchClear').classList.remove('vis');
+      renderGrid();
+    }
+
+    function filtered() {
+      return PRODUCTS.filter(p => {
+        // Skip legend/note rows
+        if (!p.sku || p.sku.toUpperCase().includes('LEGEND') || p.sku.length > 60) return false;
+        if (activeFilter === 'In Stock' && p.stockInHand <= 0) return false;
+        if (activeFilter === 'Out of Stock' && p.stockInHand > 0) return false;
+        if (activeFilter !== 'all' && activeFilter !== 'In Stock' && activeFilter !== 'Out of Stock' && p.model !== activeFilter) return false;
+        if (searchQuery) {
+          const hay = [p.sku, p.productName, p.color, p.model, p.manufacturer, p.notes, p.owdId].join(' ').toLowerCase();
+          if (!hay.includes(searchQuery)) return false;
+        }
+        return true;
+      });
+    }
+
+    // ─── Render ───────────────────────────────────────────────────────────────────
+    function renderGrid() {
+      const prods = filtered();
+      document.getElementById('visibleCount').textContent = prods.length;
+      document.getElementById('totalCount').textContent = PRODUCTS.length;
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = '';
+
+      if (!prods.length) {
+        grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No products found</div><p>Try a different search or filter</p></div>`;
+        return;
+      }
+
+      prods.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.style.animationDelay = Math.min(i * .04, .5) + 's';
+        const stock = p.stockInHand;
+        const barPct = Math.min(100, (stock / 200) * 100);
+        const delivKeys = Object.keys(p.deliveries || {}).slice(0, 4);
+        const delivHTML = delivKeys.length
+          ? delivKeys.map(k => `<div class="delivery-chip"><span class="delivery-month">${k}</span><span class="delivery-qty">${p.deliveries[k]}</span></div>`).join('')
+          : '<span class="no-delivery">No upcoming deliveries</span>';
+        const imgHTML = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.sku}" onerror="this.parentNode.innerHTML='🪑'">` : '🪑';
+
+        card.innerHTML = `
+      <div class="card-header">
+        <div class="card-image">${imgHTML}</div>
+        <div class="card-info">
+          <div class="card-sku">${p.sku}</div>
+          <div class="card-name">${p.productName || 'Product ' + p.sku}</div>
+          <div class="card-meta">
+            ${p.color ? `<div class="color-badge">${colorDot(p.color)}<span>${p.color}</span></div>` : ''}
+            ${p.model && p.model !== 'nan' ? `<div class="model-badge">Model ${p.model}</div>` : ''}
+          </div>
+        </div>
       </div>
+      <div class="card-body">
+        <div class="stock-row">
+          <div>
+            <div class="stock-label">Stock In Hand</div>
+            <div class="stock-bar-wrap"><div class="stock-bar" style="width:${barPct}%;background:${stockColor(stock)}"></div></div>
+          </div>
+          <div class="stock-value ${stockCls(stock)}">${stock}</div>
+        </div>
+        <div class="deliveries-preview">${delivHTML}</div>
+      </div>`;
+        card.onclick = () => openModal(p);
+        grid.appendChild(card);
+      });
+    }
+
+    // ─── Modal ────────────────────────────────────────────────────────────────────
+    function openModal(p) {
+      document.getElementById('mSku').textContent = p.sku;
+      document.getElementById('mName').textContent = p.productName || 'Product ' + p.sku;
+      const tagsEl = document.getElementById('mTags'); tagsEl.innerHTML = '';
+      if (p.model && p.model !== 'nan') tagsEl.innerHTML += `<span class="tag tag-model">Model ${p.model}</span>`;
+      if (p.color) tagsEl.innerHTML += `<span class="tag tag-color">${colorDot(p.color)} ${p.color}</span>`;
+      if (p.manufacturer) tagsEl.innerHTML += `<span class="tag tag-mfr">${p.manufacturer}</span>`;
+
+      const stock = p.stockInHand, inv = p.inventoryStock ?? stock;
+      const delivEntries = Object.entries(p.deliveries || {});
+
+      let body = `<div class="info-grid">
+    <div class="info-card"><div class="info-card-label">Stock In Hand</div><div class="info-card-value ${stockCls(stock)}">${stock}</div><div class="info-card-sub">Units available</div></div>
+    <div class="info-card"><div class="info-card-label">Inventory On Hand</div><div class="info-card-value ${stockCls(inv)}">${inv}</div><div class="info-card-sub">From inventory sheet</div></div>
+  </div>`;
+
+      if (delivEntries.length) {
+        body += `<div class="section-title">Scheduled Deliveries</div><div class="deliveries-grid">
+      ${delivEntries.map(([m, q], idx) => `<div class="delivery-card" style="animation-delay:${idx * .05}s"><div class="delivery-card-month">${m}</div><div class="delivery-card-qty">${q}</div></div>`).join('')}
     </div>`;
-  }).join('');
-}
+      }
 
-function updateStats(){
-  document.getElementById('sTotal').textContent=all.length;
-  document.getElementById('sOk').textContent=all.filter(p=>lv(p.stock)==='ok').length;
-  document.getElementById('sMid').textContent=all.filter(p=>lv(p.stock)==='mid').length;
-  document.getElementById('sLow').textContent=all.filter(p=>lv(p.stock)==='low').length;
-}
+      const details = [
+        ['OWD ID', p.owdId || '—'],
+        ['Sheet', p.sheetName || '—'],
+        ['Source File', p.sourceFile || '—'],
+        ['Product URL', p.productUrl ? `<a href="${p.productUrl}" target="_blank">View Product ↗</a>` : '—'],
+        ['Upcoming', p.upcoming || '—'],
+      ];
+      body += `<div class="section-title">Details</div><div class="details-list">
+    ${details.map(([k, v]) => `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`).join('')}
+  </div>`;
 
-// ━━━━━━━━━━ DETAIL MODAL ━━━━━━━━━━
-function openDetail(i){
-  currentP=shown[i];
-  const p=currentP,l=lv(p.stock),clr=lvC[l],bw=Math.min(p.stock/maxQ*100,100).toFixed(1);
-  const iw=document.getElementById('mImg');
-  iw.innerHTML=`<button class="mclose" onclick="closeOv()">✕</button>`;
-  if(p.image){ const im=new Image(); im.src=p.image; im.alt=p.name; iw.appendChild(im); }
-  else{ const d=document.createElement('div'); d.className='noimg-lg'; d.textContent='📦'; iw.appendChild(d); }
-  document.getElementById('mCat').textContent=p.category;
-  document.getElementById('mName').textContent=p.name;
-  document.getElementById('mSku').textContent=p.code?'SKU: '+p.code:'';
-  document.getElementById('mGrid').innerHTML=`
-    <div class="mbox"><div class="mk">Price</div><div class="mv">${p.price?'$'+p.price.toFixed(2):'—'}</div></div>
-    <div class="mbox"><div class="mk">Stock</div><div class="mv ${l}">${p.stock} ${p.unit}</div></div>
-    <div class="mbox"><div class="mk">Status</div><div class="mv ${l}">${lvL[l]}</div></div>`;
-  const vw=document.getElementById('mVarW');
-  if(p.variations.length){ vw.style.display='block'; document.getElementById('mVars').innerHTML=p.variations.map(v=>`<div class="mvar">${v}</div>`).join(''); }
-  else vw.style.display='none';
-  document.getElementById('mAvV').textContent=lvL[l]; document.getElementById('mAvV').style.color=clr;
-  document.getElementById('mAvF').style.width=bw+'%'; document.getElementById('mAvF').style.background=clr;
-  document.getElementById('mAvN').textContent=`${p.stock} ${p.unit} currently in stock`;
-  document.getElementById('stockInput').value=p.stock;
-  document.getElementById('mAdminSec').classList.toggle('show',isStaff);
-  document.getElementById('ov').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-function closeOv(){ document.getElementById('ov').classList.remove('on'); document.body.style.overflow=''; }
-function maybeCloseOv(e){ if(e.target===document.getElementById('ov')) closeOv(); }
-function editCurrent(){ if(currentP){ closeOv(); openForm(currentP); } }
-function deleteCurrent(){ if(currentP){ closeOv(); confirmDel(shown.indexOf(currentP)); } }
+      if (p.notes) body += `<div class="section-title">Notes</div><div class="notes-box">💡 ${p.notes}</div>`;
 
-// ━━━━━━━━━━ QUICK STOCK UPDATE ━━━━━━━━━━
-async function quickUpdateStock(){
-  if(!currentP||!isStaff) return;
-  const ns=parseInt(document.getElementById('stockInput').value)||0;
-  if(!apiUrl){
-    const p=all.find(x=>x.id===currentP.id); if(p){ p.stock=ns; currentP.stock=ns; }
-    maxQ=Math.max(...all.map(x=>x.stock),1); updateStats(); doFilter(); closeOv();
-    toast('Stock updated (demo mode)','success'); return;
-  }
-  try{
-    await apiPost({action:'update_stock',row:currentP._row,stock:ns});
-    toast('✅ Stock updated!','success'); closeOv(); setTimeout(fetchData,600);
-  }catch{ toast('Failed to update stock','error'); }
-}
+      document.getElementById('modalBody').innerHTML = body;
+      document.getElementById('modalOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+    function closeModalOnBg(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ━━━━━━━━━━ FORM ━━━━━━━━━━
-function openForm(product=null){
-  if(!isStaff){ toast('Please log in as staff first','error'); return; }
-  formMode=product?'edit':'add';
-  document.getElementById('formTitle').textContent=product?'Edit Product':'Add New Product';
-  document.getElementById('fsubTxt').textContent=product?'✓ Save Changes':'✓ Add Product';
-  ['name','category','stock','price','code','unit','variation','image'].forEach(f=>{
-    document.getElementById('f_'+f).value=product?(f==='variation'?(product.variations||[]).join(','):(product[f]||'')):'';
-  });
-  if(product) document.getElementById('fov')._ep=product;
-  document.getElementById('fov').classList.add('on');
-  document.body.style.overflow='hidden';
-  setTimeout(()=>document.getElementById('f_name').focus(),200);
-}
-function closeFov(){ document.getElementById('fov').classList.remove('on'); document.body.style.overflow=''; }
-function maybeCloseFov(e){ if(e.target===document.getElementById('fov')) closeFov(); }
-function editIdx(i){ openForm(shown[i]); }
+    // ─── Toast ────────────────────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+    }
 
-async function submitForm(){
-  const name=document.getElementById('f_name').value.trim();
-  const stock=document.getElementById('f_stock').value;
-  if(!name||stock===''){ toast('Product name and stock are required','error'); return; }
-  const data={name,stock:parseFloat(stock)||0,price:parseFloat(document.getElementById('f_price').value)||0,category:document.getElementById('f_category').value.trim()||'Uncategorised',code:document.getElementById('f_code').value.trim(),unit:document.getElementById('f_unit').value.trim()||'pcs',variation:document.getElementById('f_variation').value.trim(),image:document.getElementById('f_image').value.trim()};
-  const btn=document.getElementById('fsubBtn'); btn.disabled=true; document.getElementById('fsubTxt').textContent='Saving…';
-  if(!apiUrl){
-    if(formMode==='edit'){
-      const ep=document.getElementById('fov')._ep;
-      const idx=all.findIndex(x=>x.id===ep.id);
-      if(idx!==-1) all[idx]={...all[idx],...data,variations:(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean)};
-    } else { all.push({id:all.length,_row:0,...data,variations:(data.variation||'').split(',').map(v=>v.trim()).filter(Boolean)}); }
-    maxQ=Math.max(...all.map(p=>p.stock),1); buildCats(); doFilter(); updateStats(); closeFov();
-    toast(formMode==='edit'?'✅ Product updated (demo)':'✅ Product added (demo)','success');
-    btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product'; return;
-  }
-  try{
-    const ep=document.getElementById('fov')._ep;
-    const res=await apiPost(formMode==='edit'?{action:'edit',row:ep._row,data}:{action:'add',data});
-    toast(res.message||'Done!','success'); closeFov(); setTimeout(fetchData,700);
-  }catch{ toast('Failed to save product','error'); }
-  finally{ btn.disabled=false; document.getElementById('fsubTxt').textContent=formMode==='edit'?'✓ Save Changes':'✓ Add Product'; }
-}
-
-// ━━━━━━━━━━ DELETE ━━━━━━━━━━
-function confirmDel(i){
-  const p=shown[i];
-  document.getElementById('confMsg').textContent=`"${p.name}" will be permanently removed from your inventory.`;
-  document.getElementById('conf').classList.add('on');
-  document.getElementById('confYes').onclick=()=>doDelete(p);
-}
-function closeConf(){ document.getElementById('conf').classList.remove('on'); }
-
-async function doDelete(p){
-  closeConf();
-  if(!apiUrl){
-    all=all.filter(x=>x.id!==p.id); maxQ=Math.max(...all.map(x=>x.stock),1);
-    buildCats(); doFilter(); updateStats(); toast('Product deleted (demo)','info'); return;
-  }
-  try{ await apiPost({action:'delete',row:p._row}); toast('Product deleted','info'); setTimeout(fetchData,700); }
-  catch{ toast('Failed to delete','error'); }
-}
-
-// ━━━━━━━━━━ API ━━━━━━━━━━
-async function apiPost(body){
-  const r=await fetch(apiUrl,{method:'POST',body:JSON.stringify(body)});
-  const j=await r.json();
-  if(j.error) throw new Error(j.error);
-  return j;
-}
-
-// ━━━━━━━━━━ DEMO ━━━━━━━━━━
-function loadDemo(){
-  all=[
-    {id:0,_row:2,name:'Premium Cotton T-Shirt',stock:48,price:29.95,category:'Clothing',code:'TS-001',unit:'pcs',variations:['XS','S','M','L','XL','XXL'],image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80'},
-    {id:1,_row:3,name:'Classic Denim Jeans',stock:7,price:79.95,category:'Clothing',code:'DJ-002',unit:'pcs',variations:['28','30','32','34','36'],image:'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80'},
-    {id:2,_row:4,name:'Floral Midi Dress',stock:22,price:59.95,category:'Clothing',code:'DR-003',unit:'pcs',variations:['XS','S','M','L'],image:'https://images.unsplash.com/photo-1594938298603-c8148c4b4571?w=400&q=80'},
-    {id:3,_row:5,name:'Merino Wool Scarf',stock:3,price:49.95,category:'Accessories',code:'SC-004',unit:'pcs',variations:['Navy','Cream','Charcoal'],image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400&q=80'},
-    {id:4,_row:6,name:'Leather Sneakers',stock:15,price:129.95,category:'Footwear',code:'SN-005',unit:'pairs',variations:['US6','US7','US8','US9','US10','US11'],image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'},
-    {id:5,_row:7,name:'Canvas Tote Bag',stock:2,price:24.95,category:'Bags',code:'TB-006',unit:'pcs',variations:['Natural','Black','Olive'],image:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80'},
-    {id:6,_row:8,name:'Stainless Steel Watch',stock:11,price:199.95,category:'Accessories',code:'WA-007',unit:'pcs',variations:['Silver','Gold','Rose Gold'],image:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80'},
-    {id:7,_row:9,name:'Polarised Sunglasses',stock:34,price:39.95,category:'Accessories',code:'SG-008',unit:'pcs',variations:['Black','Tortoise','Blue'],image:'https://images.unsplash.com/photo-1509695507497-903c140c43b0?w=400&q=80'},
-    {id:8,_row:10,name:'Linen Shirt',stock:0,price:69.95,category:'Clothing',code:'LN-009',unit:'pcs',variations:['S','M','L','XL'],image:'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&q=80'},
-  ];
-  maxQ=Math.max(...all.map(p=>p.stock),1);
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('ldot').style.display='block';
-  buildCats(); doFilter(); updateStats();
-  toast('Demo loaded — try Staff Login to manage products','success');
-}
-
-// ━━━━━━━━━━ TOAST + KEYS ━━━━━━━━━━
-function toast(msg,type='info'){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast '+type+' on';
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3200);
-}
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){ closeOv(); closeFov(); closeConf(); closeLov(); closePov(); }
-  if(e.key==='Enter'&&document.getElementById('lov').classList.contains('on')) doLogin();
-});
-</script>
+    // ─── Init ─────────────────────────────────────────────────────────────────────
+    loadData();
+  </script>
 </body>
+
 </html>
